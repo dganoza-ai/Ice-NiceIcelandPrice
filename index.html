@@ -115,18 +115,20 @@
             border-radius: 14px;
             margin-bottom: 24px;
             gap: 4px;
+            overflow-x: auto;
         }
 
         .nav-tabs button {
             flex: 1;
             background: transparent;
             border: none;
-            padding: 10px;
-            font-size: 0.85rem;
+            padding: 10px 12px;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
             cursor: pointer;
             border-radius: 10px;
+            white-space: nowrap;
         }
 
         .nav-tabs button.active {
@@ -332,7 +334,6 @@
             align-items: center;
         }
 
-        /* Botón de estado interactivo */
         .status-btn {
             border: none;
             padding: 3px 10px;
@@ -365,7 +366,6 @@
             font-size: 0.8rem;
         }
 
-        /* Formulario Añadir */
         .add-form {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto;
@@ -396,10 +396,10 @@
             font-size: 0.85rem;
         }
 
-        /* Mapa y Fuentes */
+        /* Mapa y Tarjetas Informativas */
         #map {
             width: 100%;
-            height: 400px;
+            height: 420px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
             margin-top: 10px;
@@ -429,6 +429,35 @@
             text-decoration: underline;
         }
 
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .guide-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .guide-box h4 {
+            font-size: 0.95rem;
+            color: var(--accent-purple);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .guide-box ul {
+            padding-left: 18px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
         @media (max-width: 640px) {
             .add-form {
                 grid-template-columns: 1fr;
@@ -454,9 +483,10 @@
 
         <!-- Pestañas de Navegación -->
         <div class="nav-tabs">
-            <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto & Cotizaciones</button>
+            <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto</button>
             <button onclick="switchTab('mapa', event)">🗺️ Mapa Itinerario</button>
-            <button onclick="switchTab('fuentes', event)">🔗 Fuentes & Enlaces</button>
+            <button onclick="switchTab('guia', event)">🎒 Guía & Equipaje</button>
+            <button onclick="switchTab('fuentes', event)">🔗 Fuentes</button>
         </div>
 
         <!-- PESTAÑA 1: PRESUPUESTO -->
@@ -544,12 +574,55 @@
         <div id="mapa" class="tab-content">
             <div class="source-card">
                 <h3>🗺️ Ruta Emblemática (5 Días / 4 Noches)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Explora los puntos clave que visitaremos durante nuestra estancia en febrero de 2027.</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Haz clic en los marcadores del mapa para ver una descripción detallada de cada punto clave que visitaremos en febrero.</p>
                 <div id="map"></div>
             </div>
         </div>
 
-        <!-- PESTAÑA 3: FUENTES Y ENLACES -->
+        <!-- PESTAÑA 3: GUÍA & EQUIPAJE -->
+        <div id="guia" class="tab-content">
+            <div class="source-card" style="margin-bottom: 20px;">
+                <h3>🎒 Preparación y Consejos para Islandia (Febrero)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Las temperaturas medias en febrero rondan entre los -2°C y 3°C, con fuertes vientos y posibilidad de nieve o hielo en las carreteras. La clave absoluta es vestirse en capas.</p>
+            </div>
+            <div class="guide-grid">
+                <div class="guide-box">
+                    <h4>🧥 1. Sistema de Capas (Ropa)</h4>
+                    <ul>
+                        <li><strong>Capa Base (Térmica):</strong> 2 juegos de camisetas y mallas térmicas de lana merina o poliéster técnico (nada de algodón).</li>
+                        <li><strong>Capa Intermedia:</strong> Forro polar (*fleece*) grueso o jersey de lana islandesa (*lopapeysa*).</li>
+                        <li><strong>Capa Exterior:</strong> Chaqueta impermeable y cortavientos de alta calidad (Gore-Tex o similar) y pantalones de trekking impermeables.</li>
+                    </ul>
+                </div>
+                <div class="guide-box">
+                    <h4>🥾 2. Calzado & Seguridad</h4>
+                    <ul>
+                        <li><strong>Botas de montaña:</strong> Altas, impermeables, cómodas y con buena suela antideslizante.</li>
+                        <li><strong>Crampones ligeros (Icers):</strong> Imprescindibles en la mochila para caminar seguro sobre aceras y senderos helados.</li>
+                        <li><strong>Calcetines de lana:</strong> Varios pares de calcetines térmicos altos de lana merina.</li>
+                    </ul>
+                </div>
+                <div class="guide-box">
+                    <h4>🧤 3. Accesorios Esenciales</h4>
+                    <ul>
+                        <li>Gorro de lana abrigado y orejeras.</li>
+                        <li>Guantes térmicos cortavientos (preferiblemente táctiles).</li>
+                        <li>Braga de cuello polar o buff.</li>
+                        <li>Gafas de sol (el reflejo del sol sobre la nieve en febrero es muy intenso).</li>
+                    </ul>
+                </div>
+                <div class="guide-box">
+                    <h4>🎒 4. Equipaje & Varios</h4>
+                    <ul>
+                        <li><strong>Bañador y toalla ligera de microfibra:</strong> Indispensable para las aguas termales (Blue Lagoon / Sky Lagoon / pozas naturales).</li>
+                        <li><strong>Power bank:</strong> El frío drena rápido las baterías del móvil y la cámara.</li>
+                        <li><strong>Adaptador de enchufe:</strong> En Islandia se usan enchufes europeos estándar (Tipo C/F).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 4: FUENTES Y ENLACES -->
         <div id="fuentes" class="tab-content">
             <div class="source-card">
                 <h3>✈️ Vuelos (Barcelona BCN - Reikiavik KEF)</h3>
@@ -584,7 +657,7 @@
             { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v4')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v5')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
@@ -693,7 +766,7 @@
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v4', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v5', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -714,7 +787,7 @@
             renderItems();
         }
 
-        // Inicializar Mapa Leaflet
+        // Inicializar Mapa Leaflet con Descripciones
         const map = L.map('map').setView([64.1466, -21.9426], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
@@ -722,16 +795,40 @@
         }).addTo(map);
 
         const locations = [
-            { name: "Reikiavik (Punto de llegada y base)", coords: [64.1466, -21.9426] },
-            { name: "Parque Nacional Þingvellir", coords: [64.2559, -21.1197] },
-            { name: "Zona Geothermal de Geysir", coords: [64.3104, -20.3025] },
-            { name: "Cascada Gullfoss", coords: [64.3271, -20.1199] },
-            { name: "Playa de Arena Negra (Vík)", coords: [63.4186, -19.0060] },
-            { name: "Blue Lagoon", coords: [63.8804, -22.4495] }
+            { 
+                name: "Reikiavik (Base Principal)", 
+                coords: [64.1466, -21.9426],
+                desc: "Nuestra base de operaciones. Ciudad acogedora, llena de arte callejero, cafés increíbles y la emblemática iglesia Hallgrímskirkja."
+            },
+            { 
+                name: "Parque Nacional Þingvellir", 
+                coords: [64.2559, -21.1197],
+                desc: "Lugar histórico y geológico único. Aquí caminaremos literalmente entre las placas tectónicas de Norteamérica y Eurasia."
+            },
+            { 
+                name: "Zona Geothermal de Geysir", 
+                coords: [64.3104, -20.3025],
+                desc: "Valle geotérmico activo donde el géiser Strokkur entra en erupción cada pocos minutos lanzando agua hirviendo al aire."
+            },
+            { 
+                name: "Cascada Gullfoss", 
+                coords: [64.3271, -20.1199],
+                desc: "La 'Cascada Dorada'. En invierno ofrece un espectáculo imponente con enormes paredes de hielo esculpidas por el río Hvítá."
+            },
+            { 
+                name: "Playa de Arena Negra (Vík)", 
+                coords: [63.4186, -19.0060],
+                desc: "Famosa playa de arena basáltica negra, formaciones de columnas de basalto y vistas espectaculares de los acantilados."
+            },
+            { 
+                name: "Blue Lagoon", 
+                coords: [63.8804, -22.4495],
+                desc: "El famoso spa geotermal de aguas ricas en sílice y minerales humeantes a 38°C, perfecto para relajarse rodeados de campos de lava."
+            }
         ];
 
         locations.forEach(loc => {
-            L.marker(loc.coords).addTo(map).bindPopup(`<b>${loc.name}</b>`);
+            L.marker(loc.coords).addTo(map).bindPopup(`<b>${loc.name}</b><br><span style="font-size:0.8rem; color:#555;">${loc.desc}</span>`);
         });
 
         loadRandomCuriosity();
