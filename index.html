@@ -1,526 +1,522 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cata de Vinos | Ximena, Fiorella, Raquel & Diego</title>
+    <title>Planificador de Viaje: Islandia 2027 🇮🇸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #fcfbfa;
-            --card-bg: #ffffff;
-            --primary: #5c2c32;
-            --accent: #c5a059;
-            --text-main: #2b2b2b;
-            --text-muted: #737373;
-            --border-color: #eae5e0;
-            --radius: 12px;
+        :root[data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #34d399;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+            --badge-reserved: rgba(52, 211, 153, 0.15);
+            --badge-reserved-text: #34d399;
+            --badge-pending: rgba(251, 191, 36, 0.15);
+            --badge-pending-text: #fbbf24;
+            --input-bg: #0f172a;
+        }
+
+        :root[data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-cyan: #0284c7;
+            --accent-emerald: #059669;
+            --accent-purple: #9333ea;
+            --accent-amber: #d97706;
+            --badge-reserved: rgba(5, 150, 105, 0.1);
+            --badge-reserved-text: #059669;
+            --badge-pending: rgba(217, 119, 6, 0.1);
+            --badge-pending-text: #d97706;
+            --input-bg: #f8fafc;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-body);
             color: var(--text-main);
-            padding: 20px;
+            padding: 24px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
         }
 
-        .container {
+        .app-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 900px;
         }
 
         header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-top: 10px;
-        }
-
-        header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--primary);
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
-        }
-
-        header .event-date {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 4px;
-        }
-
-        header p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .nav-tabs {
             display: flex;
-            background: #f0ece6;
-            padding: 4px;
-            border-radius: var(--radius);
-            margin-bottom: 25px;
-        }
-
-        .nav-tabs button {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 10px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 9px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-tabs button.active {
-            background: var(--card-bg);
-            color: var(--primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            font-weight: 600;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 20px;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        h2 {
-            font-size: 1.05rem;
+        .title-group h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-group p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-icon {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
             font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 12px;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        p.intro-text {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 12px;
+        .btn-icon:hover {
+            background: var(--bg-card-hover);
         }
 
-        .curiosity-box {
-            background: #fdfbf7;
-            border-left: 3px solid var(--accent);
-            padding: 10px 12px;
-            font-size: 0.85rem;
-            color: var(--text-main);
-            margin-bottom: 10px;
-            border-radius: 0 8px 8px 0;
-            line-height: 1.4;
+        /* Banner de Curiosidad Diaria */
+        .curiosity-banner {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(192, 132, 252, 0.1));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
-        .minimal-list-item {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
+        .curiosity-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-cyan);
+        }
+
+        .curiosity-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Panel de Fechas y Sincronización */
+        .control-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
-        .minimal-list-item:last-child {
+        .sync-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sync-info strong {
+            color: var(--text-main);
+        }
+
+        .btn-refresh {
+            background: var(--accent-cyan);
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-refresh:hover {
+            opacity: 0.9;
+        }
+
+        /* Resumen general */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .summary-card label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .summary-card .amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .summary-card .per-person {
+            font-size: 0.85rem;
+            color: var(--accent-emerald);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Desglose por Integrante */
+        .travelers-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .travelers-card h2 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .travelers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .traveler-badge {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .traveler-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .traveler-cost {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        /* Listado de Gastos */
+        .items-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .items-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-row:last-child {
             border-bottom: none;
         }
 
-        .wine-title {
-            font-weight: 600;
-            font-size: 0.9rem;
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        .wine-subtitle {
-            font-size: 0.78rem;
+        .item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-details {
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-top: 2px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.78rem;
+        .badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
         }
 
-        input, select, textarea {
-            width: 100%;
-            padding: 9px 11px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            background: #faf9f8;
-            color: var(--text-main);
-            outline: none;
-            transition: border 0.2s;
+        .badge-reserved {
+            background: var(--badge-reserved);
+            color: var(--badge-reserved-text);
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            background: #fff;
+        .badge-pending {
+            background: var(--badge-pending);
+            color: var(--badge-pending-text);
         }
 
-        button.btn-main {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 11px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        button.btn-main:hover {
-            opacity: 0.9;
-        }
-
-        button.btn-reset {
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: opacity 0.2s;
-        }
-
-        button.btn-reset:hover {
-            opacity: 0.9;
+        .item-price {
+            font-weight: 700;
+            font-size: 1rem;
         }
 
         .btn-delete {
-            background: transparent;
+            background: none;
             border: none;
-            color: #d9534f;
-            font-size: 0.78rem;
+            color: #ef4444;
             cursor: pointer;
-            padding: 4px 8px;
+            font-size: 0.8rem;
+            padding: 4px;
         }
 
-        .score-preview {
-            text-align: center;
-            font-size: 1rem;
+        /* Formulario Añadir */
+        .add-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        input, select {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-add {
+            background: var(--accent-cyan);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
             font-weight: 600;
-            color: var(--accent);
-            margin: 12px 0;
-            background: #fdfbf7;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px dashed var(--accent);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .add-form {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="app-container">
+        <!-- Header -->
         <header>
-            <h1>🍷 Cata de Vinos Casera</h1>
-            <div class="event-date">📅 07 / 11 / 2027</div>
-            <p>Ximena, Fiorella, Raquel & Diego</p>
+            <div class="title-group">
+                <h1>🇮🇸 Ice, Ice, Paradise</h1>
+                <p>Islandia 2027 · Del 17 al 21 de Febrero (5 Días / 4 Noches)</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
         </header>
 
-        <!-- Navegación Minimalista -->
-        <div class="nav-tabs">
-            <button class="active" onclick="switchTab('portada', event)">Presentación</button>
-            <button onclick="switchTab('cata', event)">Ficha</button>
-            <button onclick="switchTab('gestion', event)">Vinos</button>
+        <!-- Banner de Curiosidad Diaria (Aleatoria al entrar) -->
+        <div class="curiosity-banner">
+            <span class="curiosity-title" id="curiosity-day-title">💡 Dato Curioso del Viaje</span>
+            <span class="curiosity-text" id="curiosity-text">Cargando dato curioso de Islandia...</span>
         </div>
 
-        <!-- PÁGINA 1: PORTADA, INTRODUCCIÓN Y CURIOSIDADES DINÁMICAS -->
-        <div id="portada" class="tab-content active">
-            <div class="card">
-                <h2>✨ Bienvenidos a la Cata</h2>
-                <p class="intro-text">
-                    Bienvenidos a una experiencia diseñada para disfrutar con los cinco sentidos. En esta cata exploraremos las características únicas de nuestra selección, evaluando cada matiz en fase visual, olfativa y gustativa para descubrir en equipo cuál se corona como el favorito de la noche.
-                </p>
+        <!-- Panel de Control y Sitema de Precios en Vivo -->
+        <section class="control-panel">
+            <div class="sync-info">
+                <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje y Vehículo</strong></span>
+                <span id="last-sync-time">Última actualización automática: Justo ahora</span>
             </div>
+            <button class="btn-refresh" onclick="simulatePriceUpdate()">
+                🔄 Consultar Precios Ahora
+            </button>
+        </section>
 
-            <div class="card">
-                <h2>🍇 Origen y Curiosidades del Terroir</h2>
-                <div id="dynamic-curiosities">
-                    <!-- Se rellena dinámicamente según los vinos añadidos -->
+        <!-- Tarjetas de Resumen General -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <label>Presupuesto Total Estimado</label>
+                <div class="amount" id="total-budget">0 €</div>
+                <div class="per-person" id="per-person-budget">0 € / persona</div>
+            </div>
+            <div class="summary-card">
+                <label>Gastos Reservados (Fijos)</label>
+                <div class="amount" style="color: var(--accent-emerald)" id="total-reserved">0 €</div>
+                <div class="per-person" style="color: var(--text-muted);" id="reserved-count">0 ítems con reserva</div>
+            </div>
+        </section>
+
+        <!-- Desglose por Integrante -->
+        <section class="travelers-card">
+            <h2>👥 Presupuesto por Persona (Ximena, Fiorella, Raquel, Diego)</h2>
+            <div class="travelers-grid">
+                <div class="traveler-badge">
+                    <div class="traveler-name">Ximena</div>
+                    <div class="traveler-cost" id="cost-ximena">0 €</div>
+                </div>
+                <div class="traveler-badge">
+                    <div class="traveler-name">Fiorella</div>
+                    <div class="traveler-cost" id="cost-fiorella">0 €</div>
+                </div>
+                <div class="traveler-badge">
+                    <div class="traveler-name">Raquel</div>
+                    <div class="traveler-cost" id="cost-raquel">0 €</div>
+                </div>
+                <div class="traveler-badge">
+                    <div class="traveler-name">Diego</div>
+                    <div class="traveler-cost" id="cost-diego">0 €</div>
                 </div>
             </div>
+        </section>
 
-            <div class="card">
-                <h2>📊 Ranking de Favoritos</h2>
-                <div id="home-ranking">
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">Aún no hay puntuaciones registradas. ¡Realiza la primera cata en la pestaña 'Ficha'!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- PÁGINA 2: FICHA DE CATA -->
-        <div id="cata" class="tab-content">
-            <div class="card">
-                <h2>📝 Registrar Valoración</h2>
-                <form id="scoring-form" onsubmit="saveScore(event)">
-                    <div class="form-group">
-                        <label>Participante</label>
-                        <input type="text" id="evaluator-name" placeholder="Tu nombre" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Vino Seleccionado</label>
-                        <select id="score-wine-select" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Visual (0 - 20)</label>
-                        <input type="number" id="score-visual" min="0" max="20" value="15" required oninput="calculateTotal()">
-                    </div>
-                    <div class="form-group">
-                        <label>Olfativa (0 - 30)</label>
-                        <input type="number" id="score-nose" min="0" max="30" value="22" required oninput="calculateTotal()">
-                    </div>
-                    <div class="form-group">
-                        <label>Gustativa (0 - 50)</label>
-                        <input type="number" id="score-palate" min="0" max="50" value="38" required oninput="calculateTotal()">
-                    </div>
-                    <div class="score-preview">
-                        Total: <span id="total-score">75</span> / 100 pts
-                    </div>
-                    <div class="form-group">
-                        <label>Notas / Comentarios</label>
-                        <textarea id="score-comments" rows="2" placeholder="Notas breves..."></textarea>
-                    </div>
-                    <button type="submit" class="btn-main">Guardar Valoración</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- PÁGINA 3: GESTIÓN DE VINOS Y RESET -->
-        <div id="gestion" class="tab-content">
-            <div class="card">
-                <h2>🍇 Listado de Vinos Actuales</h2>
-                <div id="wine-management-list"></div>
+        <!-- Listado de Gastos -->
+        <section class="items-section">
+            <div class="items-header">
+                <h2>📋 Cotizaciones en Tiempo Real</h2>
             </div>
 
-            <div class="card">
-                <h2>➕ Añadir Nuevo Vino</h2>
-                <form id="add-wine-form" onsubmit="addWine(event)">
-                    <div class="form-group">
-                        <label>Nombre / Bodega</label>
-                        <input type="text" id="new-name" placeholder="Ej. Albariño de Rías Baixas" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Vino</label>
-                        <select id="new-type">
-                            <option value="Vino blanco">Vino blanco</option>
-                            <option value="Vino tinto">Vino tinto</option>
-                            <option value="Vino rosado">Vino rosado</option>
-                            <option value="Espumoso">Espumoso / Cava</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Procedencia / D.O. (Lugar)</label>
-                        <input type="text" id="new-origin" placeholder="Ej. Rías Baixas, Galicia" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Curiosidad del sitio y su influencia</label>
-                        <input type="text" id="new-curiosity" placeholder="Ej. Clima atlántico y suelos graníticos que aportan gran frescor." required>
-                    </div>
-                    <button type="submit" class="btn-main">Añadir a la Cata</button>
-                </form>
-            </div>
+            <div id="items-list"></div>
 
-            <div class="card">
-                <h2>⚙️ Opciones de Pruebas</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
-                    Utiliza este botón para borrar las puntuaciones de prueba acumuladas antes del día oficial de la cata.
-                </p>
-                <button type="button" class="btn-reset" onclick="resetData()">Borrar Datos de Pruebas</button>
-            </div>
-        </div>
+            <!-- Formulario para Añadir Ítem -->
+            <form class="add-form" onsubmit="addItem(event)">
+                <input type="text" id="new-item-title" placeholder="Ej. Tour Auroras Boreales" required>
+                <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
+                <select id="new-item-status">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Reservado">Reservado</option>
+                </select>
+                <button type="submit" class="btn-add">Añadir</button>
+            </form>
+        </section>
     </div>
 
     <script>
-        let wines = JSON.parse(localStorage.getItem('catas_vinos_v4')) || [
-            { id: 1, name: "Albariño Tradicional", type: "Vino blanco", origin: "Rías Baixas (Galicia)", curiosity: "Cultivado bajo influencia atlántica directa, lo que aporta una acidez viva y notas minerales muy característicos." },
-            { id: 2, name: "Tinto Joven Roble", type: "Vino tinto", origin: "Ribera del Duero", curiosity: "Altitud y amplitud térmica extrema que concentran los aromas frutales y la estructura tánica." },
-            { id: 3, name: "Rosado de Garnacha", type: "Vino rosado", origin: "Navarra", curiosity: "Suelos arcillo-calcáreos que realzan la finura aromática y la ligereza en boca." }
+        // Datos de Curiosidades para cada día del viaje (17 al 21 de Febrero)
+        const islandCuriosities = [
+            { day: "Día 1 (17 Feb)", text: "🇮🇸 Islandia no tiene mosquitos debido a su clima oceánico subártico y las rápidas fluctuaciones de temperatura en invierno." },
+            { day: "Día 2 (18 Feb)", text: "🌋 El agua caliente que sale de las duchas en Reikiavik proviene directamente de fuentes geotermales y tiene un ligero olor a azufre totalmente natural." },
+            { day: "Día 3 (19 Feb)", text: "✨ Febrero es uno de los mejores meses para observar auroras boreales gracias a la duración óptima de la oscuridad nocturna." },
+            { day: "Día 4 (20 Feb)", text: "🧊 Las playas de arena negra como Vík deben su color al basalto volcánico esculpido por la erosión del océano Atlántico." },
+            { day: "Día 5 (21 Feb)", text: "🐎 Los caballos islandeses son una raza pura protegida por ley: ningún otro caballo puede ser importado a la isla desde el siglo X." }
         ];
 
-        let scores = JSON.parse(localStorage.getItem('catas_scores_v4')) || [];
+        // Datos Iniciales de Gastos
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v2')) || [
+            { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
+            { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
+            { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
+            { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente" }
+        ];
 
-        function switchTab(tabId, e) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            e.target.classList.add('active');
+        function initApp() {
+            // Seleccionar curiosidad aleatoria o basada en la visita
+            const randomCuriosity = islandCuriosities[Math.floor(Math.random() * islandCuriosities.length)];
+            document.getElementById('curiosity-day-title').innerText = `💡 ${randomCuriosity.day} - Dato Curioso`;
+            document.getElementById('curiosity-text').innerText = randomCuriosity.text;
 
-            if(tabId === 'portada') {
-                updateStats();
-                renderCuriosities();
-            }
+            updateLastSyncLabel();
+            renderItems();
         }
 
-        function renderAll() {
-            const mgmtList = document.getElementById('wine-management-list');
-            const select = document.getElementById('score-wine-select');
-            
-            mgmtList.innerHTML = '';
-            select.innerHTML = '';
-
-            if(wines.length === 0) {
-                mgmtList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No hay vinos registrados.</p>';
-            }
-
-            wines.forEach(wine => {
-                mgmtList.innerHTML += `
-                    <div class="minimal-list-item">
-                        <div>
-                            <div class="wine-title">${wine.name}</div>
-                            <div class="wine-subtitle">${wine.type} · ${wine.origin}</div>
-                        </div>
-                        <button class="btn-delete" onclick="deleteWine(${wine.id})">Eliminar</button>
-                    </div>
-                `;
-                select.innerHTML += `<option value="${wine.name}">${wine.name} (${wine.type})</option>`;
-            });
-
-            localStorage.setItem('catas_vinos_v4', JSON.stringify(wines));
-            updateStats();
-            renderCuriosities();
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-icon').innerText = newTheme === 'dark' ? '🌙' : '☀️';
         }
 
-        function renderCuriosities() {
-            const container = document.getElementById('dynamic-curiosities');
-            container.innerHTML = '';
-
-            if(wines.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No hay vinos añadidos para mostrar curiosidades.</p>';
-                return;
-            }
-
-            wines.forEach(wine => {
-                container.innerHTML += `
-                    <div class="curiosity-box">
-                        <strong>${wine.name} (${wine.type}) — <em>${wine.origin}</em>:</strong> ${wine.curiosity}
-                    </div>
-                `;
-            });
-        }
-
-        function addWine(e) {
-            e.preventDefault();
-            const name = document.getElementById('new-name').value;
-            const type = document.getElementById('new-type').value;
-            const origin = document.getElementById('new-origin').value;
-            const curiosity = document.getElementById('new-curiosity').value;
-
-            wines.push({ id: Date.now(), name, type, origin, curiosity });
-            renderAll();
-            document.getElementById('add-wine-form').reset();
-            alert('¡Vino añadido correctamente!');
-        }
-
-        function deleteWine(id) {
-            wines = wines.filter(w => w.id !== id);
-            renderAll();
-        }
-
-        function resetData() {
-            if(confirm('¿Seguro que quieres borrar todas las puntuaciones de prueba?')) {
-                scores = [];
-                localStorage.removeItem('catas_scores_v4');
-                updateStats();
-                alert('¡Datos de prueba reseteados con éxito!');
-            }
-        }
-
-        function calculateTotal() {
-            const v = parseInt(document.getElementById('score-visual').value) || 0;
-            const n = parseInt(document.getElementById('score-nose').value) || 0;
-            const p = parseInt(document.getElementById('score-palate').value) || 0;
-            document.getElementById('total-score').innerText = v + n + p;
-        }
-
-        function saveScore(e) {
-            e.preventDefault();
-            const evaluator = document.getElementById('evaluator-name').value;
-            const wine = document.getElementById('score-wine-select').value;
-            const total = parseInt(document.getElementById('total-score').innerText);
-            const comments = document.getElementById('score-comments').value;
-
-            scores.push({ evaluator, wine, total, comments });
-            localStorage.setItem('catas_scores_v4', JSON.stringify(scores));
-
-            document.getElementById('scoring-form').reset();
-            calculateTotal();
-            alert('¡Valoración guardada con éxito!');
-        }
-
-        function updateStats() {
-            const homeRanking = document.getElementById('home-ranking');
-            if(scores.length === 0) {
-                homeRanking.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Aún no hay valoraciones registradas. ¡Puntúa en la pestaña de Ficha!</p>';
-                return;
-            }
-
-            let averages = {};
-            scores.forEach(s => {
-                if(!averages[s.wine]) averages[s.wine] = { sum: 0, count: 0 };
-                averages[s.wine].sum += s.total;
-                averages[s.wine].count += 1;
-            });
-
-            let ranking = Object.keys(averages).map(w => ({
-                name: w,
-                avg: (averages[w].sum / averages[w].count).toFixed(1)
-            })).sort((a, b) => b.avg - a.avg);
-
-            homeRanking.innerHTML = '';
-            ranking.forEach((r, idx) => {
-                homeRanking.innerHTML += `
-                    <div class="minimal-list-item">
-                        <div>
-                            <span style="font-weight: 600; color: var(--primary);">#${idx + 1}</span> ${r.name}
-                        </div>
-                        <span style="font-weight: 600; color: var(--accent);">${r.avg} pts</span>
-                    </div>
-                `;
-            });
-        }
-
-        renderAll();
-        calculateTotal();
-    </script>
-</body>
-</html>
+        function updateLastSyncLabel() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('last-sync
