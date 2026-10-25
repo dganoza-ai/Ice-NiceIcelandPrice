@@ -263,31 +263,19 @@
             <button onclick="switchTab('gestion', event)">Vinos</button>
         </div>
 
-        <!-- PÁGINA 1: PORTADA, INTRODUCCIÓN Y RANKING -->
+        <!-- PÁGINA 1: PORTADA, INTRODUCCIÓN Y CURIOSIDADES DINÁMICAS -->
         <div id="portada" class="tab-content active">
             <div class="card">
                 <h2>✨ Bienvenidos a la Cata</h2>
                 <p class="intro-text">
-                    Bienvenidos a una experiencia diseñada para disfrutar con los cinco sentidos. Para esta ocasión especial, hemos preparado un recorrido equilibrado que transita desde la frescura atlántica de los blancos hasta la elegancia y estructura de nuestros tintos y cavas seleccionados.
-                </p>
-                <p class="intro-text">
-                    A través de esta plataforma digital, evaluaremos cada vino en fase visual, olfativa y gustativa para descubrir en equipo cuál se corona como el favorito de la noche.
+                    Bienvenidos a una experiencia diseñada para disfrutar con los cinco sentidos. En esta cata exploraremos las características únicas de nuestra selección, evaluando cada matiz en fase visual, olfativa y gustativa para descubrir en equipo cuál se corona como el favorito de la noche.
                 </p>
             </div>
 
             <div class="card">
-                <h2>🍇 Curiosidades de la Selección</h2>
-                <div class="curiosity-box">
-                    <strong>Albariño / Blanco:</strong> Tradicionalmente cultivado en parras para proteger la uva de la humedad del suelo y maximizar su frescor atlántico.
-                </div>
-                <div class="curiosity-box">
-                    <strong>Tinto Joven / Roble:</strong> Elaborado para destacar la fruta pura en boca, con un paso fugaz por madera que aporta complejidad sin enmascarar su juventud.
-                </div>
-                <div class="curiosity-box">
-                    <strong>Tinto Crianza:</strong> Requiere meses de crianza paciente en barrica de roble y botella para redondear sus taninos y ganar notas especiadas.
-                </div>
-                <div class="curiosity-box">
-                    <strong>Cava / Espumoso:</strong> Utiliza el método tradicional de segunda fermentación en botella, lo que genera una burbuja fina y persistente.
+                <h2>🍇 Origen y Curiosidades del Terroir</h2>
+                <div id="dynamic-curiosities">
+                    <!-- Se rellena dinámicamente según los vinos añadidos -->
                 </div>
             </div>
 
@@ -348,20 +336,24 @@
                 <form id="add-wine-form" onsubmit="addWine(event)">
                     <div class="form-group">
                         <label>Nombre / Bodega</label>
-                        <input type="text" id="new-name" placeholder="Ej. Albariño D.O." required>
+                        <input type="text" id="new-name" placeholder="Ej. Albariño de Rías Baixas" required>
                     </div>
                     <div class="form-group">
-                        <label>Tipo</label>
+                        <label>Tipo de Vino</label>
                         <select id="new-type">
-                            <option value="Blanco">Blanco</option>
-                            <option value="Tinto Joven">Tinto Joven</option>
-                            <option value="Tinto Crianza">Tinto Crianza</option>
-                            <option value="Espumoso">Espumoso</option>
+                            <option value="Vino blanco">Vino blanco</option>
+                            <option value="Vino tinto">Vino tinto</option>
+                            <option value="Vino rosado">Vino rosado</option>
+                            <option value="Espumoso">Espumoso / Cava</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Notas clave</label>
-                        <input type="text" id="new-notes" placeholder="Ej. Frutal, fresco" required>
+                        <label>Procedencia / D.O. (Lugar)</label>
+                        <input type="text" id="new-origin" placeholder="Ej. Rías Baixas, Galicia" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Curiosidad del sitio y su influencia</label>
+                        <input type="text" id="new-curiosity" placeholder="Ej. Clima atlántico y suelos graníticos que aportan gran frescor." required>
                     </div>
                     <button type="submit" class="btn-main">Añadir a la Cata</button>
                 </form>
@@ -378,14 +370,13 @@
     </div>
 
     <script>
-        let wines = JSON.parse(localStorage.getItem('catas_vinos_v3')) || [
-            { id: 1, name: "Albariño / Verdejo", type: "Blanco", notes: "Cítricos y fresco" },
-            { id: 2, name: "Tinto Joven", type: "Tinto Joven", notes: "Frutos rojos" },
-            { id: 3, name: "Tinto Crianza", type: "Tinto Crianza", notes: "Madera y especias" },
-            { id: 4, name: "Cava / Espumoso", type: "Espumoso", notes: "Burbuja elegante" }
+        let wines = JSON.parse(localStorage.getItem('catas_vinos_v4')) || [
+            { id: 1, name: "Albariño Tradicional", type: "Vino blanco", origin: "Rías Baixas (Galicia)", curiosity: "Cultivado bajo influencia atlántica directa, lo que aporta una acidez viva y notas minerales muy característicos." },
+            { id: 2, name: "Tinto Joven Roble", type: "Vino tinto", origin: "Ribera del Duero", curiosity: "Altitud y amplitud térmica extrema que concentran los aromas frutales y la estructura tánica." },
+            { id: 3, name: "Rosado de Garnacha", type: "Vino rosado", origin: "Navarra", curiosity: "Suelos arcillo-calcáreos que realzan la finura aromática y la ligereza en boca." }
         ];
 
-        let scores = JSON.parse(localStorage.getItem('catas_scores_v3')) || [];
+        let scores = JSON.parse(localStorage.getItem('catas_scores_v4')) || [];
 
         function switchTab(tabId, e) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -396,6 +387,7 @@
 
             if(tabId === 'portada') {
                 updateStats();
+                renderCuriosities();
             }
         }
 
@@ -415,25 +407,45 @@
                     <div class="minimal-list-item">
                         <div>
                             <div class="wine-title">${wine.name}</div>
-                            <div class="wine-subtitle">${wine.type} · ${wine.notes}</div>
+                            <div class="wine-subtitle">${wine.type} · ${wine.origin}</div>
                         </div>
                         <button class="btn-delete" onclick="deleteWine(${wine.id})">Eliminar</button>
                     </div>
                 `;
-                select.innerHTML += `<option value="${wine.name}">${wine.name}</option>`;
+                select.innerHTML += `<option value="${wine.name}">${wine.name} (${wine.type})</option>`;
             });
 
-            localStorage.setItem('catas_vinos_v3', JSON.stringify(wines));
+            localStorage.setItem('catas_vinos_v4', JSON.stringify(wines));
             updateStats();
+            renderCuriosities();
+        }
+
+        function renderCuriosities() {
+            const container = document.getElementById('dynamic-curiosities');
+            container.innerHTML = '';
+
+            if(wines.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No hay vinos añadidos para mostrar curiosidades.</p>';
+                return;
+            }
+
+            wines.forEach(wine => {
+                container.innerHTML += `
+                    <div class="curiosity-box">
+                        <strong>${wine.name} (${wine.type}) — <em>${wine.origin}</em>:</strong> ${wine.curiosity}
+                    </div>
+                `;
+            });
         }
 
         function addWine(e) {
             e.preventDefault();
             const name = document.getElementById('new-name').value;
             const type = document.getElementById('new-type').value;
-            const notes = document.getElementById('new-notes').value;
+            const origin = document.getElementById('new-origin').value;
+            const curiosity = document.getElementById('new-curiosity').value;
 
-            wines.push({ id: Date.now(), name, type, notes });
+            wines.push({ id: Date.now(), name, type, origin, curiosity });
             renderAll();
             document.getElementById('add-wine-form').reset();
             alert('¡Vino añadido correctamente!');
@@ -447,7 +459,7 @@
         function resetData() {
             if(confirm('¿Seguro que quieres borrar todas las puntuaciones de prueba?')) {
                 scores = [];
-                localStorage.removeItem('catas_scores_v3');
+                localStorage.removeItem('catas_scores_v4');
                 updateStats();
                 alert('¡Datos de prueba reseteados con éxito!');
             }
@@ -468,7 +480,7 @@
             const comments = document.getElementById('score-comments').value;
 
             scores.push({ evaluator, wine, total, comments });
-            localStorage.setItem('catas_scores_v3', JSON.stringify(scores));
+            localStorage.setItem('catas_scores_v4', JSON.stringify(scores));
 
             document.getElementById('scoring-form').reset();
             calculateTotal();
