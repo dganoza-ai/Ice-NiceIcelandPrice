@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador de Viaje: Islandia 2027 🇮🇸</title>
+    <title>Ice, Ice, Paradise | Islandia 2027</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS para el Mapa Interactivo -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root[data-theme="dark"] {
             --bg-body: #0f172a;
@@ -17,10 +19,6 @@
             --accent-emerald: #34d399;
             --accent-purple: #c084fc;
             --accent-amber: #fbbf24;
-            --badge-reserved: rgba(52, 211, 153, 0.15);
-            --badge-reserved-text: #34d399;
-            --badge-pending: rgba(251, 191, 36, 0.15);
-            --badge-pending-text: #fbbf24;
             --input-bg: #0f172a;
         }
 
@@ -35,10 +33,6 @@
             --accent-emerald: #059669;
             --accent-purple: #9333ea;
             --accent-amber: #d97706;
-            --badge-reserved: rgba(5, 150, 105, 0.1);
-            --badge-reserved-text: #059669;
-            --badge-pending: rgba(217, 119, 6, 0.1);
-            --badge-pending-text: #d97706;
             --input-bg: #f8fafc;
         }
 
@@ -112,6 +106,42 @@
             background: var(--bg-card-hover);
         }
 
+        /* Sistema de Pestañas */
+        .nav-tabs {
+            display: flex;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            gap: 4px;
+        }
+
+        .nav-tabs button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .nav-tabs button.active {
+            background: var(--accent-cyan);
+            color: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* Banner de Curiosidad Rotativa */
         .curiosity-banner {
             background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(192, 132, 252, 0.1));
@@ -119,14 +149,7 @@
             border-radius: 16px;
             padding: 16px 20px;
             margin-bottom: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
             cursor: pointer;
-        }
-
-        .curiosity-banner:hover {
-            border-color: var(--accent-cyan);
         }
 
         .curiosity-title {
@@ -139,19 +162,14 @@
             justify-content: space-between;
         }
 
-        .curiosity-title span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
         .curiosity-text {
             font-size: 0.95rem;
             font-weight: 500;
-            margin-top: 4px;
+            margin-top: 6px;
+            display: block;
         }
 
-        /* Panel de Control y Precios en Vivo */
+        /* Panel de Control */
         .control-panel {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -186,13 +204,6 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-refresh:hover {
-            opacity: 0.9;
         }
 
         /* Resumen general */
@@ -282,9 +293,6 @@
         }
 
         .items-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 16px;
         }
 
@@ -308,7 +316,7 @@
         .item-info {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
         }
 
         .item-title {
@@ -324,22 +332,19 @@
             align-items: center;
         }
 
-        .badge {
-            padding: 2px 8px;
+        /* Botón de estado interactivo */
+        .status-btn {
+            border: none;
+            padding: 3px 10px;
             border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 650;
+            cursor: pointer;
         }
-
-        .badge-reserved {
-            background: var(--badge-reserved);
-            color: var(--badge-reserved-text);
-        }
-
-        .badge-pending {
-            background: var(--badge-pending);
-            color: var(--badge-pending-text);
-        }
+        .status-Pendiente { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+        .status-Confirmado { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+        .status-Espera { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .status-Cancelado { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
         .item-actions {
             display: flex;
@@ -358,7 +363,6 @@
             color: #ef4444;
             cursor: pointer;
             font-size: 0.8rem;
-            padding: 4px;
         }
 
         /* Formulario Añadir */
@@ -381,10 +385,6 @@
             outline: none;
         }
 
-        input:focus, select:focus {
-            border-color: var(--accent-cyan);
-        }
-
         .btn-add {
             background: var(--accent-cyan);
             color: #ffffff;
@@ -394,6 +394,39 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 0.85rem;
+        }
+
+        /* Mapa y Fuentes */
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .source-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .source-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--accent-cyan);
+        }
+
+        .source-card a {
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .source-card a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 640px) {
@@ -419,125 +452,161 @@
             </div>
         </header>
 
-        <!-- Banner de Curiosidades Ampliado (Históricas, Políticas, Geográficas y Sociales) -->
-        <div class="curiosity-banner" onclick="loadRandomCuriosity()" title="Haz clic para cambiar de curiosidad">
-            <div class="curiosity-title" id="curiosity-category">
-                <span>🏛️ CURIOSIDAD POLÍTICA E HISTÓRICA</span>
-                <small>🔄 Haz clic para ver otra</small>
-            </div>
-            <span class="curiosity-text" id="curiosity-text">Cargando datos de Islandia...</span>
+        <!-- Pestañas de Navegación -->
+        <div class="nav-tabs">
+            <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto & Cotizaciones</button>
+            <button onclick="switchTab('mapa', event)">🗺️ Mapa Itinerario</button>
+            <button onclick="switchTab('fuentes', event)">🔗 Fuentes & Enlaces</button>
         </div>
 
-        <!-- Panel de Control y Precios en Vivo -->
-        <section class="control-panel">
-            <div class="sync-info">
-                <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje y Vehículo</strong></span>
-                <span id="last-sync-time">Última actualización automática: Justo ahora</span>
-            </div>
-            <button class="btn-refresh" onclick="simulatePriceUpdate()">
-                🔄 Consultar Precios Ahora
-            </button>
-        </section>
-
-        <!-- Tarjetas de Resumen General -->
-        <section class="summary-grid">
-            <div class="summary-card">
-                <label>Presupuesto Total Estimado</label>
-                <div class="amount" id="total-budget">0 €</div>
-                <div class="per-person" id="per-person-budget">0 € / persona</div>
-            </div>
-            <div class="summary-card">
-                <label>Gastos Reservados (Fijos)</label>
-                <div class="amount" style="color: var(--accent-emerald)" id="total-reserved">0 €</div>
-                <div class="per-person" style="color: var(--text-muted);" id="reserved-count">0 ítems con reserva</div>
-            </div>
-        </section>
-
-        <!-- Desglose por Integrante -->
-        <section class="travelers-card">
-            <h2>👥 Presupuesto por Persona (Ximena, Fiorella, Raquel, Diego)</h2>
-            <div class="travelers-grid">
-                <div class="traveler-badge">
-                    <div class="traveler-name">Ximena</div>
-                    <div class="traveler-cost" id="cost-ximena">0 €</div>
+        <!-- PESTAÑA 1: PRESUPUESTO -->
+        <div id="presupuesto" class="tab-content active">
+            <!-- Banner de Curiosidad Rotativa -->
+            <div class="curiosity-banner" onclick="loadRandomCuriosity()">
+                <div class="curiosity-title" id="curiosity-category">
+                    <span>🏛️ CURIOSIDAD POLÍTICA E HISTÓRICA</span>
+                    <small>🔄 Haz clic para ver otra</small>
                 </div>
-                <div class="traveler-badge">
-                    <div class="traveler-name">Fiorella</div>
-                    <div class="traveler-cost" id="cost-fiorella">0 €</div>
-                </div>
-                <div class="traveler-badge">
-                    <div class="traveler-name">Raquel</div>
-                    <div class="traveler-cost" id="cost-raquel">0 €</div>
-                </div>
-                <div class="traveler-badge">
-                    <div class="traveler-name">Diego</div>
-                    <div class="traveler-cost" id="cost-diego">0 €</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Listado de Gastos -->
-        <section class="items-section">
-            <div class="items-header">
-                <h2>📋 Cotizaciones en Tiempo Real</h2>
+                <span class="curiosity-text" id="curiosity-text">Cargando datos de Islandia...</span>
             </div>
 
-            <div id="items-list"></div>
+            <!-- Panel de Control y Precios en Vivo -->
+            <section class="control-panel">
+                <div class="sync-info">
+                    <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje y Vehículo</strong></span>
+                    <span id="last-sync-time">Última actualización automática: Justo ahora</span>
+                </div>
+                <button class="btn-refresh" onclick="simulatePriceUpdate()">
+                    🔄 Consultar Precios Ahora
+                </button>
+            </section>
 
-            <!-- Formulario para Añadir Ítem -->
-            <form class="add-form" onsubmit="addItem(event)">
-                <input type="text" id="new-item-title" placeholder="Ej. Tour Auroras Boreales" required>
-                <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
-                <select id="new-item-status">
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Reservado">Reservado</option>
-                </select>
-                <button type="submit" class="btn-add">Añadir</button>
-            </form>
-        </section>
+            <!-- Tarjetas de Resumen General -->
+            <section class="summary-grid">
+                <div class="summary-card">
+                    <label>Presupuesto Total Estimado</label>
+                    <div class="amount" id="total-budget">0 €</div>
+                    <div class="per-person" id="per-person-budget">0 € / persona</div>
+                </div>
+                <div class="summary-card">
+                    <label>Gastos Confirmados</label>
+                    <div class="amount" style="color: var(--accent-emerald)" id="total-confirmed">0 €</div>
+                    <div class="per-person" style="color: var(--text-muted);" id="confirmed-count">0 ítems confirmados</div>
+                </div>
+            </section>
+
+            <!-- Desglose por Integrante -->
+            <section class="travelers-card">
+                <h2>👥 Presupuesto por Persona (Ximena, Fiorella, Raquel, Diego)</h2>
+                <div class="travelers-grid">
+                    <div class="traveler-badge">
+                        <div class="traveler-name">Ximena</div>
+                        <div class="traveler-cost" id="cost-ximena">0 €</div>
+                    </div>
+                    <div class="traveler-badge">
+                        <div class="traveler-name">Fiorella</div>
+                        <div class="traveler-cost" id="cost-fiorella">0 €</div>
+                    </div>
+                    <div class="traveler-badge">
+                        <div class="traveler-name">Raquel</div>
+                        <div class="traveler-cost" id="cost-raquel">0 €</div>
+                    </div>
+                    <div class="traveler-badge">
+                        <div class="traveler-name">Diego</div>
+                        <div class="traveler-cost" id="cost-diego">0 €</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Listado de Gastos -->
+            <section class="items-section">
+                <div class="items-header">
+                    <h2>📋 Cotizaciones en Tiempo Real (Haz clic en el estado para cambiarlo)</h2>
+                </div>
+
+                <div id="items-list"></div>
+
+                <!-- Formulario para Añadir Ítem -->
+                <form class="add-form" onsubmit="addItem(event)">
+                    <input type="text" id="new-item-title" placeholder="Ej. Tour Auroras Boreales" required>
+                    <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
+                    <select id="new-item-status">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmado">Confirmado</option>
+                        <option value="Espera">En espera</option>
+                    </select>
+                    <button type="submit" class="btn-add">Añadir</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- PESTAÑA 2: MAPA INTERACTIVO -->
+        <div id="mapa" class="tab-content">
+            <div class="source-card">
+                <h3>🗺️ Ruta Emblemática (5 Días / 4 Noches)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Explora los puntos clave que visitaremos durante nuestra estancia en febrero de 2027.</p>
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: FUENTES Y ENLACES -->
+        <div id="fuentes" class="tab-content">
+            <div class="source-card">
+                <h3>✈️ Vuelos (Barcelona BCN - Reikiavik KEF)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Seguimiento de tarifas directas e indirectas con aerolíneas regulares y low-cost.</p>
+                <a href="https://www.google.com/travel/flights" target="_blank">🔗 Ver en Google Flights</a>
+            </div>
+            <div class="source-card">
+                <h3>🏡 Alojamiento (Cabañas con Jacuzzi / Reikiavik)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Opciones de hospedaje ideales para avistamiento de auroras boreales y descanso geotermal.</p>
+                <a href="https://www.booking.com" target="_blank">🔗 Ver en Booking.com</a>
+            </div>
+            <div class="source-card">
+                <h3>🚙 Alquiler de Vehículo 4x4 (SUV Duster o similar)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Indispensable para carreteras en invierno y seguros de ceniza volcánica/grava.</p>
+                <a href="https://www.bluelacarrental.is" target="_blank">🔗 Ver en Blue Car Rental Islandia</a>
+            </div>
+            <div class="source-card">
+                <h3>🌊 Excursiones (Blue Lagoon / Sky Lagoon)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Entradas a baños termales y tours guiados de auroras.</p>
+                <a href="https://www.bluelagoon.com" target="_blank">🔗 Ver web oficial Blue Lagoon</a>
+            </div>
+        </div>
     </div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Repositorio ampliado de curiosidades (Históricas, Políticas, Geográficas y Sociales)
         const islandCuriosities = [
-            // Históricas
             { cat: "📜 CURIOSIDAD HISTÓRICA", text: "El Althingi, fundado en el año 930 d.C. en Þingvellir, es considerado el parlamento democrático activo más antiguo del mundo." },
-            { cat: "📜 CURIOSIDAD HISTÓRICA", text: "Durante la Segunda Guerra Mundial, Islandia fue ocupada de forma pacífica por tropas británicas y posteriormente estadounidenses para evitar una invasión nazi." },
-            { cat: "📜 CURIOSIDAD HISTÓRICA", text: "Los primeros pobladores permanentes de Islandia fueron vikingos nórdicos y celtas procedentes de las Islas Británicas a finales del siglo IX." },
-            
-            // Políticas
-            { cat: "🏛️ CURIOSIDAD POLÍTICA", text: "Islandia no cuenta con un ejército permanente; su defensa está respaldada por la OTAN, aunque dispone de una pequeña guardia costera." },
-            { cat: "🏛️ CURIOSIDAD POLÍTICA", text: "En 1980, Islandia eligió a Vigdís Finnbogadóttir, convirtiéndose en la primera mujer del mundo en ser elegida jefa de Estado mediante votación democrática." },
-            { cat: "🏛️ CURIOSIDAD POLÍTICA", text: "Tras la crisis financiera de 2008, los ciudadanos islandeses redactaron una nueva constitución colaborativa a través de internet utilizando redes sociales." },
-
-            // Geográficas
-            { cat: "🌋 CURIOSIDAD GEOGRÁFICA", text: "Islandia se encuentra justo sobre la Dorsal Mesoatlántica, lo que significa que la isla se está separando lentamente en dos mitades (América y Eurasia) a unos 2 cm por año." },
-            { cat: "🌋 CURIOSIDAD GEOGRÁFICA", text: "Más del 11% de la superficie total del país está cubierta por glaciares, siendo el Vatnajökull el más grande de Europa." },
-            { cat: "🌋 CURIOSIDAD GEOGRÁFICA", text: "Debido a su intensa actividad geotérmica, casi el 100% de la electricidad y calefacción en Islandia proviene de fuentes de energía renovables (geotermica e hidroeléctrica)." },
-
-            // Sociales y Culturales
-            { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no existen los apellidos tradicionales en el sentido occidental; los hijos usan el nombre de su padre (o madre) seguido del sufijo '-son' (hijo) o '-dóttir' (hija)." },
-            { cat: "👥 CURIOSIDAD SOCIAL", text: "Debido a su reducida población (unos 400.000 habitantes) y su aislamiento histórico, existen aplicaciones móviles locales para verificar el parentesco antes de salir con alguien y evitar la consanguinidad." },
-            { cat: "👥 CURIOSIDAD SOCIAL", text: "Islandia es una de las naciones con mayor índice de lectura del mundo: se calcula que uno de cada diez islandeses publica un libro a lo largo de su vida." }
+            { cat: "🏛️ CURIOSIDAD POLÍTICA", text: "Islandia no cuenta con un ejército permanente; su defensa está respaldada por la OTAN, con una guardia costera especializada." },
+            { cat: "🌋 CURIOSIDAD GEOGRÁFICA", text: "Islandia se encuentra sobre la Dorsal Mesoatlántica; América y Eurasia se separan a unos 2 cm por año." },
+            { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v3')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v4')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
             { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente" }
         ];
 
+        function switchTab(tabId, e) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            e.target.classList.add('active');
+
+            if(tabId === 'mapa') {
+                setTimeout(() => { map.invalidateSize(); }, 200);
+            }
+        }
+
         function loadRandomCuriosity() {
             const randomItem = islandCuriosities[Math.floor(Math.random() * islandCuriosities.length)];
             document.getElementById('curiosity-category').innerHTML = `<span>${randomItem.cat}</span> <small>🔄 Haz clic para ver otra</small>`;
             document.getElementById('curiosity-text').innerText = randomItem.text;
-        }
-
-        function initApp() {
-            loadRandomCuriosity();
-            updateLastSyncLabel();
-            renderItems();
         }
 
         function toggleTheme() {
@@ -556,7 +625,7 @@
 
         function simulatePriceUpdate() {
             items = items.map(item => {
-                if(item.status === 'Pendiente') {
+                if(item.status !== 'Confirmado') {
                     const variation = (Math.random() * 20 - 10);
                     let newPrice = Math.max(50, item.price + variation);
                     return { ...item, price: parseFloat(newPrice.toFixed(2)) };
@@ -568,23 +637,31 @@
             alert('¡Motores de búsqueda consultados! Precios actualizados en tiempo real.');
         }
 
-        setInterval(() => {
-            simulatePriceUpdate();
-        }, 3600000);
+        function cycleStatus(id) {
+            const statuses = ["Pendiente", "Confirmado", "Espera", "Cancelado"];
+            items = items.map(item => {
+                if(item.id === id) {
+                    const nextIdx = (statuses.indexOf(item.status) + 1) % statuses.length;
+                    return { ...item, status: statuses[nextIdx] };
+                }
+                return item;
+            });
+            renderItems();
+        }
 
         function renderItems() {
             const listEl = document.getElementById('items-list');
             listEl.innerHTML = '';
 
             let total = 0;
-            let reservedTotal = 0;
-            let reservedCount = 0;
+            let confirmedTotal = 0;
+            let confirmedCount = 0;
 
             items.forEach(item => {
                 total += item.price;
-                if(item.status === 'Reservado') {
-                    reservedTotal += item.price;
-                    reservedCount++;
+                if(item.status === 'Confirmado') {
+                    confirmedTotal += item.price;
+                    confirmedCount++;
                 }
 
                 listEl.innerHTML += `
@@ -592,7 +669,7 @@
                         <div class="item-info">
                             <span class="item-title">${item.title}</span>
                             <div class="item-details">
-                                <span class="badge ${item.status === 'Reservado' ? 'badge-reserved' : 'badge-pending'}">${item.status}</span>
+                                <button class="status-btn status-${item.status}" onclick="cycleStatus(${item.id})">${item.status}</button>
                                 <span>(${(item.price / 4).toFixed(2)} € / pers)</span>
                             </div>
                         </div>
@@ -608,15 +685,15 @@
             document.getElementById('total-budget').innerText = `${total.toFixed(2)} €`;
             document.getElementById('per-person-budget').innerText = `${perPerson.toFixed(2)} € / persona`;
             
-            document.getElementById('total-reserved').innerText = `${reservedTotal.toFixed(2)} €`;
-            document.getElementById('reserved-count').innerText = `${reservedCount} ítems reservados`;
+            document.getElementById('total-confirmed').innerText = `${confirmedTotal.toFixed(2)} €`;
+            document.getElementById('confirmed-count').innerText = `${confirmedCount} ítems confirmados`;
 
             document.getElementById('cost-ximena').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-fiorella').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v3', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v4', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -637,7 +714,29 @@
             renderItems();
         }
 
-        initApp();
+        // Inicializar Mapa Leaflet
+        const map = L.map('map').setView([64.1466, -21.9426], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const locations = [
+            { name: "Reikiavik (Punto de llegada y base)", coords: [64.1466, -21.9426] },
+            { name: "Parque Nacional Þingvellir", coords: [64.2559, -21.1197] },
+            { name: "Zona Geothermal de Geysir", coords: [64.3104, -20.3025] },
+            { name: "Cascada Gullfoss", coords: [64.3271, -20.1199] },
+            { name: "Playa de Arena Negra (Vík)", coords: [63.4186, -19.0060] },
+            { name: "Blue Lagoon", coords: [63.8804, -22.4495] }
+        ];
+
+        locations.forEach(loc => {
+            L.marker(loc.coords).addTo(map).bindPopup(`<b>${loc.name}</b>`);
+        });
+
+        loadRandomCuriosity();
+        updateLastSyncLabel();
+        renderItems();
     </script>
 </body>
 </html>
