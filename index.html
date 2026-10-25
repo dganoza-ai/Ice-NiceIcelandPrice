@@ -1,563 +1,514 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador de Viaje: Islandia 2027 🇮🇸</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Cata de Vinos | Ximena, Fiorella, Raquel & Diego</title>
     <style>
-        :root[data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-cyan: #38bdf8;
-            --accent-emerald: #34d399;
-            --accent-purple: #c084fc;
-            --accent-amber: #fbbf24;
-            --badge-reserved: rgba(52, 211, 153, 0.15);
-            --badge-reserved-text: #34d399;
-            --badge-pending: rgba(251, 191, 36, 0.15);
-            --badge-pending-text: #fbbf24;
-            --input-bg: #0f172a;
-        }
-
-        :root[data-theme="light"] {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-card-hover: #f1f5f9;
-            --border-color: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --accent-cyan: #0284c7;
-            --accent-emerald: #059669;
-            --accent-purple: #9333ea;
-            --accent-amber: #d97706;
-            --badge-reserved: rgba(5, 150, 105, 0.1);
-            --badge-reserved-text: #059669;
-            --badge-pending: rgba(217, 119, 6, 0.1);
-            --badge-pending-text: #d97706;
-            --input-bg: #f8fafc;
+        :root {
+            --bg-color: #fcfbfa;
+            --card-bg: #ffffff;
+            --primary: #5c2c32;
+            --accent: #c5a059;
+            --text-main: #2b2b2b;
+            --text-muted: #737373;
+            --border-color: #eae5e0;
+            --radius: 12px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-body);
+            background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 24px;
-            min-height: 100vh;
+            padding: 20px;
             display: flex;
             justify-content: center;
         }
 
-        .app-container {
+        .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 600px;
         }
 
-        /* Top Bar & Theme Toggle */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .title-group h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .title-group p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .theme-toggle-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .theme-toggle-btn:hover {
-            background: var(--bg-card-hover);
-        }
-
-        /* Date Selector Panel */
-        .dates-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .dates-panel h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .dates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .date-option {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            padding: 12px 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        .date-option.selected {
-            border-color: var(--accent-cyan);
-            background: rgba(56, 189, 248, 0.08);
-        }
-
-        .date-option input {
-            margin-right: 8px;
-        }
-
-        .date-option strong {
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .date-option span {
-            color: var(--text-muted);
-            font-size: 0.78rem;
-        }
-
-        /* Presupuesto Resumen */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .summary-card label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .summary-card .amount {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 6px;
-        }
-
-        .summary-card .per-person {
-            font-size: 0.85rem;
-            color: var(--accent-emerald);
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        /* Person Breakdown Table */
-        .travelers-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .travelers-card h2 {
-            font-size: 1rem;
-            margin-bottom: 16px;
-            font-weight: 600;
-            color: var(--accent-purple);
-        }
-
-        .travelers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-        }
-
-        .traveler-badge {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px;
-            border-radius: 12px;
             text-align: center;
+            margin-bottom: 25px;
+            padding-top: 10px;
         }
 
-        .traveler-name {
+        header h1 {
+            font-size: 1.4rem;
             font-weight: 600;
-            font-size: 0.9rem;
+            color: var(--primary);
+            letter-spacing: -0.5px;
             margin-bottom: 4px;
         }
 
-        .traveler-cost {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
+        header .event-date {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 4px;
         }
 
-        /* Desglose de Gastos y Formulario */
-        .items-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
+        header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
         }
 
-        .items-header {
+        .nav-tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
+            background: #f0ece6;
+            padding: 4px;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
         }
 
-        .items-header h2 {
-            font-size: 1rem;
+        .nav-tabs button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 9px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs button.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             font-weight: 600;
         }
 
-        .item-row {
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        p.intro-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .curiosity-box {
+            background: #fdfbf7;
+            border-left: 3px solid var(--accent);
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.4;
+        }
+
+        .minimal-list-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
         }
 
-        .item-row:last-child {
+        .minimal-list-item:last-child {
             border-bottom: none;
         }
 
-        .item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .item-title {
+        .wine-title {
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
-        .item-details {
-            font-size: 0.8rem;
+        .wine-subtitle {
+            font-size: 0.78rem;
             color: var(--text-muted);
-            display: flex;
-            gap: 8px;
-            align-items: center;
+            margin-top: 2px;
         }
 
-        .badge {
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.78rem;
             font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
 
-        .badge-reserved {
-            background: var(--badge-reserved);
-            color: var(--badge-reserved-text);
+        input, select, textarea {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: #faf9f8;
+            color: var(--text-main);
+            outline: none;
+            transition: border 0.2s;
         }
 
-        .badge-pending {
-            background: var(--badge-pending);
-            color: var(--badge-pending-text);
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: #fff;
         }
 
-        .item-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        button.btn-main {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 11px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
         }
 
-        .item-price {
-            font-weight: 700;
-            font-size: 1rem;
+        button.btn-main:hover {
+            opacity: 0.9;
+        }
+
+        button.btn-reset {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: opacity 0.2s;
+        }
+
+        button.btn-reset:hover {
+            opacity: 0.9;
         }
 
         .btn-delete {
-            background: none;
+            background: transparent;
             border: none;
-            color: #ef4444;
+            color: #d9534f;
+            font-size: 0.78rem;
             cursor: pointer;
-            font-size: 0.8rem;
-            padding: 4px;
+            padding: 4px 8px;
         }
 
-        /* Add Form */
-        .add-form {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px dashed var(--border-color);
-        }
-
-        input, select {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--accent-cyan);
-        }
-
-        .btn-add {
-            background: var(--accent-cyan);
-            color: #ffffff;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
+        .score-preview {
+            text-align: center;
+            font-size: 1rem;
             font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        @media (max-width: 640px) {
-            .add-form {
-                grid-template-columns: 1fr;
-            }
+            color: var(--accent);
+            margin: 12px 0;
+            background: #fdfbf7;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px dashed var(--accent);
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- Header -->
+    <div class="container">
         <header>
-            <div class="title-group">
-                <h1>🇮🇸 Islandia 2027</h1>
-                <p>Planificador de viaje (5 Días / 4 Noches)</p>
-            </div>
-            <button class="theme-toggle-btn" onclick="toggleTheme()">
-                <span id="theme-icon">🌙</span> <span id="theme-text">Modo Oscuro</span>
-            </button>
+            <h1>🍷 Cata de Vinos Casera</h1>
+            <div class="event-date">📅 07 / 11 / 2027</div>
+            <p>Ximena, Fiorella, Raquel & Diego</p>
         </header>
 
-        <!-- Selector Bloque de Fechas -->
-        <section class="dates-panel">
-            <h2>📅 Selección de Bloque de Fechas (Febrero 2027)</h2>
-            <div class="dates-grid">
-                <label class="date-option">
-                    <input type="radio" name="dateBlock" value="15-19" onchange="updateDates(this)">
-                    <strong>Opción A (Lun-Vie)</strong>
-                    <span>15 Feb – 19 Feb 2027</span>
-                </label>
-                <label class="date-option">
-                    <input type="radio" name="dateBlock" value="16-20" onchange="updateDates(this)">
-                    <strong>Opción B (Mar-Sáb)</strong>
-                    <span>16 Feb – 20 Feb 2027</span>
-                </label>
-                <label class="date-option selected">
-                    <input type="radio" name="dateBlock" value="17-21" checked onchange="updateDates(this)">
-                    <strong>Opción C (Mié-Dom) ⭐</strong>
-                    <span>17 Feb – 21 Feb 2027</span>
-                </label>
-                <label class="date-option">
-                    <input type="radio" name="dateBlock" value="18-22" onchange="updateDates(this)">
-                    <strong>Opción D (Jue-Lun)</strong>
-                    <span>18 Feb – 22 Feb 2027</span>
-                </label>
-            </div>
-        </section>
+        <!-- Navegación Minimalista -->
+        <div class="nav-tabs">
+            <button class="active" onclick="switchTab('portada', event)">Presentación</button>
+            <button onclick="switchTab('cata', event)">Ficha</button>
+            <button onclick="switchTab('gestion', event)">Vinos</button>
+        </div>
 
-        <!-- Tarjetas de Resumen General -->
-        <section class="summary-grid">
-            <div class="summary-card">
-                <label>Presupuesto Total Estimado</label>
-                <div class="amount" id="total-budget">0 €</div>
-                <div class="per-person" id="per-person-budget">0 € / persona</div>
+        <!-- PÁGINA 1: PORTADA, INTRODUCCIÓN Y RANKING -->
+        <div id="portada" class="tab-content active">
+            <div class="card">
+                <h2>✨ Bienvenidos a la Cata</h2>
+                <p class="intro-text">
+                    Bienvenidos a una experiencia diseñada para disfrutar con los cinco sentidos. Para esta ocasión especial, hemos preparado un recorrido equilibrado que transita desde la frescura atlántica de los blancos hasta la elegancia y estructura de nuestros tintos y cavas seleccionados.
+                </p>
+                <p class="intro-text">
+                    A través de esta plataforma digital, evaluaremos cada vino en fase visual, olfativa y gustativa para descubrir en equipo cuál se corona como el favorito de la noche.
+                </p>
             </div>
-            <div class="summary-card">
-                <label>Gastos Reservados (Fijos)</label>
-                <div class="amount" style="color: var(--accent-emerald)" id="total-reserved">0 €</div>
-                <div class="per-person" style="color: var(--text-muted);" id="reserved-count">0 ítems con reserva</div>
-            </div>
-        </section>
 
-        <!-- Desglose por Integrante -->
-        <section class="travelers-card">
-            <h2>👥 Presupuesto por Persona (4 Integrantes)</h2>
-            <div class="travelers-grid">
-                <div class="traveler-badge">
-                    <div class="traveler-name">Ximena</div>
-                    <div class="traveler-cost" id="cost-ximena">0 €</div>
+            <div class="card">
+                <h2>🍇 Curiosidades de la Selección</h2>
+                <div class="curiosity-box">
+                    <strong>Albariño / Blanco:</strong> Tradicionalmente cultivado en parras para proteger la uva de la humedad del suelo y maximizar su frescor atlántico.
                 </div>
-                <div class="traveler-badge">
-                    <div class="traveler-name">Fiorella</div>
-                    <div class="traveler-cost" id="cost-fiorella">0 €</div>
+                <div class="curiosity-box">
+                    <strong>Tinto Joven / Roble:</strong> Elaborado para destacar la fruta pura en boca, con un paso fugaz por madera que aporta complejidad sin enmascarar su juventud.
                 </div>
-                <div class="traveler-badge">
-                    <div class="traveler-name">Raquel</div>
-                    <div class="traveler-cost" id="cost-raquel">0 €</div>
+                <div class="curiosity-box">
+                    <strong>Tinto Crianza:</strong> Requiere meses de crianza paciente en barrica de roble y botella para redondear sus taninos y ganar notas especiadas.
                 </div>
-                <div class="traveler-badge">
-                    <div class="traveler-name">Diego</div>
-                    <div class="traveler-cost" id="cost-diego">0 €</div>
+                <div class="curiosity-box">
+                    <strong>Cava / Espumoso:</strong> Utiliza el método tradicional de segunda fermentación en botella, lo que genera una burbuja fina y persistente.
                 </div>
             </div>
-        </section>
 
-        <!-- Listado de Gastos -->
-        <section class="items-section">
-            <div class="items-header">
-                <h2>📋 Cotizaciones de Vuelos, Hospedaje y Gastos</h2>
+            <div class="card">
+                <h2>📊 Ranking de Favoritos</h2>
+                <div id="home-ranking">
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Aún no hay puntuaciones registradas. ¡Realiza la primera cata en la pestaña 'Ficha'!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 2: FICHA DE CATA -->
+        <div id="cata" class="tab-content">
+            <div class="card">
+                <h2>📝 Registrar Valoración</h2>
+                <form id="scoring-form" onsubmit="saveScore(event)">
+                    <div class="form-group">
+                        <label>Participante</label>
+                        <input type="text" id="evaluator-name" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Vino Seleccionado</label>
+                        <select id="score-wine-select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Visual (0 - 20)</label>
+                        <input type="number" id="score-visual" min="0" max="20" value="15" required oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Olfativa (0 - 30)</label>
+                        <input type="number" id="score-nose" min="0" max="30" value="22" required oninput="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>Gustativa (0 - 50)</label>
+                        <input type="number" id="score-palate" min="0" max="50" value="38" required oninput="calculateTotal()">
+                    </div>
+                    <div class="score-preview">
+                        Total: <span id="total-score">75</span> / 100 pts
+                    </div>
+                    <div class="form-group">
+                        <label>Notas / Comentarios</label>
+                        <textarea id="score-comments" rows="2" placeholder="Notas breves..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-main">Guardar Valoración</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3: GESTIÓN DE VINOS Y RESET -->
+        <div id="gestion" class="tab-content">
+            <div class="card">
+                <h2>🍇 Listado de Vinos Actuales</h2>
+                <div id="wine-management-list"></div>
             </div>
 
-            <div id="items-list"></div>
+            <div class="card">
+                <h2>➕ Añadir Nuevo Vino</h2>
+                <form id="add-wine-form" onsubmit="addWine(event)">
+                    <div class="form-group">
+                        <label>Nombre / Bodega</label>
+                        <input type="text" id="new-name" placeholder="Ej. Albariño D.O." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="new-type">
+                            <option value="Blanco">Blanco</option>
+                            <option value="Tinto Joven">Tinto Joven</option>
+                            <option value="Tinto Crianza">Tinto Crianza</option>
+                            <option value="Espumoso">Espumoso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notas clave</label>
+                        <input type="text" id="new-notes" placeholder="Ej. Frutal, fresco" required>
+                    </div>
+                    <button type="submit" class="btn-main">Añadir a la Cata</button>
+                </form>
+            </div>
 
-            <!-- Formulario para Añadir Ítem -->
-            <form class="add-form" onsubmit="addItem(event)">
-                <input type="text" id="new-item-title" placeholder="Ej. Vuelo directo Reykjavik" required>
-                <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
-                <select id="new-item-status">
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Reservado">Reservado</option>
-                </select>
-                <button type="submit" class="btn-add">Añadir</button>
-            </form>
-        </section>
+            <div class="card">
+                <h2>⚙️ Opciones de Pruebas</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                    Utiliza este botón para borrar las puntuaciones de prueba acumuladas antes del día oficial de la cata.
+                </p>
+                <button type="button" class="btn-reset" onclick="resetData()">Borrar Datos de Pruebas</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Datos Iniciales
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items')) || [
-            { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente", category: "Vuelos" },
-            { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente", category: "Hospedaje" },
-            { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente", category: "Vehículo" },
-            { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente", category: "Excursión" }
+        let wines = JSON.parse(localStorage.getItem('catas_vinos_v3')) || [
+            { id: 1, name: "Albariño / Verdejo", type: "Blanco", notes: "Cítricos y fresco" },
+            { id: 2, name: "Tinto Joven", type: "Tinto Joven", notes: "Frutos rojos" },
+            { id: 3, name: "Tinto Crianza", type: "Tinto Crianza", notes: "Madera y especias" },
+            { id: 4, name: "Cava / Espumoso", type: "Espumoso", notes: "Burbuja elegante" }
         ];
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
+        let scores = JSON.parse(localStorage.getItem('catas_scores_v3')) || [];
+
+        function switchTab(tabId, e) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
             
-            document.getElementById('theme-icon').innerText = newTheme === 'dark' ? '🌙' : '☀️';
-            document.getElementById('theme-text').innerText = newTheme === 'dark' ? 'Modo Oscuro' : 'Modo Claro';
+            document.getElementById(tabId).classList.add('active');
+            e.target.classList.add('active');
+
+            if(tabId === 'portada') {
+                updateStats();
+            }
         }
 
-        function updateDates(radio) {
-            document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
-            radio.closest('.date-option').classList.add('selected');
+        function renderAll() {
+            const mgmtList = document.getElementById('wine-management-list');
+            const select = document.getElementById('score-wine-select');
+            
+            mgmtList.innerHTML = '';
+            select.innerHTML = '';
+
+            if(wines.length === 0) {
+                mgmtList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No hay vinos registrados.</p>';
+            }
+
+            wines.forEach(wine => {
+                mgmtList.innerHTML += `
+                    <div class="minimal-list-item">
+                        <div>
+                            <div class="wine-title">${wine.name}</div>
+                            <div class="wine-subtitle">${wine.type} · ${wine.notes}</div>
+                        </div>
+                        <button class="btn-delete" onclick="deleteWine(${wine.id})">Eliminar</button>
+                    </div>
+                `;
+                select.innerHTML += `<option value="${wine.name}">${wine.name}</option>`;
+            });
+
+            localStorage.setItem('catas_vinos_v3', JSON.stringify(wines));
+            updateStats();
         }
 
-        function renderItems() {
-            const listEl = document.getElementById('items-list');
-            listEl.innerHTML = '';
+        function addWine(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-name').value;
+            const type = document.getElementById('new-type').value;
+            const notes = document.getElementById('new-notes').value;
 
-            let total = 0;
-            let reservedTotal = 0;
-            let reservedCount = 0;
+            wines.push({ id: Date.now(), name, type, notes });
+            renderAll();
+            document.getElementById('add-wine-form').reset();
+            alert('¡Vino añadido correctamente!');
+        }
 
-            items.forEach(item => {
-                total += item.price;
-                if(item.status === 'Reservado') {
-                    reservedTotal += item.price;
-                    reservedCount++;
-                }
+        function deleteWine(id) {
+            wines = wines.filter(w => w.id !== id);
+            renderAll();
+        }
 
-                listEl.innerHTML += `
-                    <div class="item-row">
-                        <div class="item-info">
-                            <span class="item-title">${item.title}</span>
-                            <div class="item-details">
-                                <span class="badge ${item.status === 'Reservado' ? 'badge-reserved' : 'badge-pending'}">${item.status}</span>
-                                <span>(${(item.price / 4).toFixed(2)} € / pers)</span>
-                            </div>
+        function resetData() {
+            if(confirm('¿Seguro que quieres borrar todas las puntuaciones de prueba?')) {
+                scores = [];
+                localStorage.removeItem('catas_scores_v3');
+                updateStats();
+                alert('¡Datos de prueba reseteados con éxito!');
+            }
+        }
+
+        function calculateTotal() {
+            const v = parseInt(document.getElementById('score-visual').value) || 0;
+            const n = parseInt(document.getElementById('score-nose').value) || 0;
+            const p = parseInt(document.getElementById('score-palate').value) || 0;
+            document.getElementById('total-score').innerText = v + n + p;
+        }
+
+        function saveScore(e) {
+            e.preventDefault();
+            const evaluator = document.getElementById('evaluator-name').value;
+            const wine = document.getElementById('score-wine-select').value;
+            const total = parseInt(document.getElementById('total-score').innerText);
+            const comments = document.getElementById('score-comments').value;
+
+            scores.push({ evaluator, wine, total, comments });
+            localStorage.setItem('catas_scores_v3', JSON.stringify(scores));
+
+            document.getElementById('scoring-form').reset();
+            calculateTotal();
+            alert('¡Valoración guardada con éxito!');
+        }
+
+        function updateStats() {
+            const homeRanking = document.getElementById('home-ranking');
+            if(scores.length === 0) {
+                homeRanking.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Aún no hay valoraciones registradas. ¡Puntúa en la pestaña de Ficha!</p>';
+                return;
+            }
+
+            let averages = {};
+            scores.forEach(s => {
+                if(!averages[s.wine]) averages[s.wine] = { sum: 0, count: 0 };
+                averages[s.wine].sum += s.total;
+                averages[s.wine].count += 1;
+            });
+
+            let ranking = Object.keys(averages).map(w => ({
+                name: w,
+                avg: (averages[w].sum / averages[w].count).toFixed(1)
+            })).sort((a, b) => b.avg - a.avg);
+
+            homeRanking.innerHTML = '';
+            ranking.forEach((r, idx) => {
+                homeRanking.innerHTML += `
+                    <div class="minimal-list-item">
+                        <div>
+                            <span style="font-weight: 600; color: var(--primary);">#${idx + 1}</span> ${r.name}
                         </div>
-                        <div class="item-actions">
-                            <span class="item-price">${item.price.toFixed(2)} €</span>
-                            <button class="btn-delete" onclick="deleteItem(${item.id})">✕</button>
-                        </div>
+                        <span style="font-weight: 600; color: var(--accent);">${r.avg} pts</span>
                     </div>
                 `;
             });
-
-            // Actualizar Totales
-            const perPerson = total / 4;
-            document.getElementById('total-budget').innerText = `${total.toFixed(2)} €`;
-            document.getElementById('per-person-budget').innerText = `${perPerson.toFixed(2)} € / persona`;
-            
-            document.getElementById('total-reserved').innerText = `${reservedTotal.toFixed(2)} €`;
-            document.getElementById('reserved-count').innerText = `${reservedCount} ítems reservados`;
-
-            document.getElementById('cost-ximena').innerText = `${perPerson.toFixed(2)} €`;
-            document.getElementById('cost-fiorella').innerText = `${perPerson.toFixed(2)} €`;
-            document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
-            document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
-
-            localStorage.setItem('iceland_2027_items', JSON.stringify(items));
         }
 
-        function addItem(e) {
-            e.preventDefault();
-            const title = document.getElementById('new-item-title').value;
-            const price = parseFloat(document.getElementById('new-item-price').value);
-            const status = document.getElementById('new-item-status').value;
-
-            items.push({ id: Date.now(), title, price, status });
-            renderItems();
-
-            document.getElementById('new-item-title').value = '';
-            document.getElementById('new-item-price').value = '';
-        }
-
-        function deleteItem(id) {
-            items = items.filter(i => i.id !== id);
-            renderItems();
-        }
-
-        renderItems();
+        renderAll();
+        calculateTotal();
     </script>
 </body>
 </html>
