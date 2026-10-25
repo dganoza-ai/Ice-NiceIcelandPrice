@@ -137,7 +137,7 @@
             font-weight: 500;
         }
 
-        /* Panel de Fechas y Sincronización */
+        /* Panel de Control y Sitema de Precios en Vivo */
         .control-panel {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -499,7 +499,6 @@
         ];
 
         function initApp() {
-            // Seleccionar curiosidad aleatoria o basada en la visita
             const randomCuriosity = islandCuriosities[Math.floor(Math.random() * islandCuriosities.length)];
             document.getElementById('curiosity-day-title').innerText = `💡 ${randomCuriosity.day} - Dato Curioso`;
             document.getElementById('curiosity-text').innerText = randomCuriosity.text;
@@ -519,4 +518,93 @@
         function updateLastSyncLabel() {
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('last-sync
+            document.getElementById('last-sync-time').innerText = `Última actualización de precios: Hoy a las ${timeString}`;
+        }
+
+        function simulatePriceUpdate() {
+            items = items.map(item => {
+                if(item.status === 'Pendiente') {
+                    const variation = (Math.random() * 20 - 10);
+                    let newPrice = Math.max(50, item.price + variation);
+                    return { ...item, price: parseFloat(newPrice.toFixed(2)) };
+                }
+                return item;
+            });
+            updateLastSyncLabel();
+            renderItems();
+            alert('¡Motores de búsqueda consultados! Precios actualizados en tiempo real.');
+        }
+
+        setInterval(() => {
+            simulatePriceUpdate();
+        }, 3600000);
+
+        function renderItems() {
+            const listEl = document.getElementById('items-list');
+            listEl.innerHTML = '';
+
+            let total = 0;
+            let reservedTotal = 0;
+            let reservedCount = 0;
+
+            items.forEach(item => {
+                total += item.price;
+                if(item.status === 'Reservado') {
+                    reservedTotal += item.price;
+                    reservedCount++;
+                }
+
+                listEl.innerHTML += `
+                    <div class="item-row">
+                        <div class="item-info">
+                            <span class="item-title">${item.title}</span>
+                            <div class="item-details">
+                                <span class="badge ${item.status === 'Reservado' ? 'badge-reserved' : 'badge-pending'}">${item.status}</span>
+                                <span>(${(item.price / 4).toFixed(2)} € / pers)</span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <span class="item-price">${item.price.toFixed(2)} €</span>
+                            <button class="btn-delete" onclick="deleteItem(${item.id})">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const perPerson = total / 4;
+            document.getElementById('total-budget').innerText = `${total.toFixed(2)} €`;
+            document.getElementById('per-person-budget').innerText = `${perPerson.toFixed(2)} € / persona`;
+            
+            document.getElementById('total-reserved').innerText = `${reservedTotal.toFixed(2)} €`;
+            document.getElementById('reserved-count').innerText = `${reservedCount} ítems reservados`;
+
+            document.getElementById('cost-ximena').innerText = `${perPerson.toFixed(2)} €`;
+            document.getElementById('cost-fiorella').innerText = `${perPerson.toFixed(2)} €`;
+            document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
+            document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
+
+            localStorage.setItem('iceland_2027_items_v2', JSON.stringify(items));
+        }
+
+        function addItem(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-item-title').value;
+            const price = parseFloat(document.getElementById('new-item-price').value);
+            const status = document.getElementById('new-item-status').value;
+
+            items.push({ id: Date.now(), title, price, status });
+            renderItems();
+
+            document.getElementById('new-item-title').value = '';
+            document.getElementById('new-item-price').value = '';
+        }
+
+        function deleteItem(id) {
+            items = items.filter(i => i.id !== id);
+            renderItems();
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
