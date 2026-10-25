@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador de Viaje: Islandia 2027 🇮🇸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #34d399;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+            --badge-reserved: rgba(52, 211, 153, 0.15);
+            --badge-reserved-text: #34d399;
+            --badge-pending: rgba(251, 191, 36, 0.15);
+            --badge-pending-text: #fbbf24;
+            --input-bg: #0f172a;
+        }
+
+        :root[data-theme="light"] {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-cyan: #0284c7;
+            --accent-emerald: #059669;
+            --accent-purple: #9333ea;
+            --accent-amber: #d97706;
+            --badge-reserved: rgba(5, 150, 105, 0.1);
+            --badge-reserved-text: #059669;
+            --badge-pending: rgba(217, 119, 6, 0.1);
+            --badge-pending-text: #d97706;
+            --input-bg: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 24px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Top Bar & Theme Toggle */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .title-group h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-group p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Date Selector Panel */
+        .dates-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .dates-panel h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .date-option {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .date-option.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .date-option input {
+            margin-right: 8px;
+        }
+
+        .date-option strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .date-option span {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        /* Presupuesto Resumen */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .summary-card label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .summary-card .amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        .summary-card .per-person {
+            font-size: 0.85rem;
+            color: var(--accent-emerald);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Person Breakdown Table */
+        .travelers-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .travelers-card h2 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .travelers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .traveler-badge {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .traveler-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .traveler-cost {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        /* Desglose de Gastos y Formulario */
+        .items-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .items-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-details {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-reserved {
+            background: var(--badge-reserved);
+            color: var(--badge-reserved-text);
+        }
+
+        .badge-pending {
+            background: var(--badge-pending);
+            color: var(--badge-pending-text);
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-price {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 4px;
+        }
+
+        /* Add Form */
+        .add-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        input, select {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-add {
+            background: var(--accent-cyan);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .add-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="title-group">
+                <h1>🇮🇸 Islandia 2027</h1>
+                <p>Planificador de viaje (5 Días / 4 Noches)</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span> <span id="theme-text">Modo Oscuro</span>
+            </button>
+        </header>
+
+        <!-- Selector Bloque de Fechas -->
+        <section class="dates-panel">
+            <h2>📅 Selección de Bloque de Fechas (Febrero 2027)</h2>
+            <div class="dates-grid">
+                <label class="date-option">
+                    <input type="radio" name="dateBlock" value="15-19" onchange="updateDates(this)">
+                    <strong>Opción A (Lun-Vie)</strong>
+                    <span>15 Feb – 19 Feb 2027</span>
+                </label>
+                <label class="date-option">
+                    <input type="radio" name="dateBlock" value="16-20" onchange="updateDates(this)">
+                    <strong>Opción B (Mar-Sáb)</strong>
+                    <span>16 Feb – 20 Feb 2027</span>
+                </label>
+                <label class="date-option selected">
+                    <input type="radio" name="dateBlock" value="17-21" checked onchange="updateDates(this)">
+                    <strong>Opción C (Mié-Dom) ⭐</strong>
+                    <span>17 Feb – 21 Feb 2027</span>
+                </label>
+                <label class="date-option">
+                    <input type="radio" name="dateBlock" value="18-22" onchange="updateDates(this)">
+                    <strong>Opción D (Jue-Lun)</strong>
+                    <span>18 Feb – 22 Feb 2027</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Tarjetas de Resumen General -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <label>Presupuesto Total Estimado</label>
+                <div class="amount" id="total-budget">0 €</div>
+                <div class="per-person" id="per-person-budget">0 € / persona</div>
+            </div>
+            <div class="summary-card">
+                <label>Gastos Reservados (Fijos)</label>
+                <div class="amount" style="color: var(--accent-emerald)" id="total-reserved">0 €</div>
+                <div class="per-person" style="color: var(--text-muted);" id="reserved-count">0 ítems con reserva</div>
+            </div>
+        </section>
+
+        <!-- Desglose por Integrante -->
+        <section class="travelers-card">
+            <h2>👥 Presupuesto por Persona (4 Integrantes)</h2>
+            <div class="travelers-grid">
+                <div class="traveler-badge">
+                    <div class="traveler-name">Ximena</div>
+                    <div class="traveler-cost" id="cost-ximena">0 €</div>
+                </div>
+                <div class="traveler-badge">
+                    <div class="traveler-name">Fiorella</div>
+                    <div class="traveler-cost" id="cost-fiorella">0 €</div>
+                </div>
+                <div class="traveler-badge">
+                    <div class="traveler-name">Raquel</div>
+                    <div class="traveler-cost" id="cost-raquel">0 €</div>
+                </div>
+                <div class="traveler-badge">
+                    <div class="traveler-name">Diego</div>
+                    <div class="traveler-cost" id="cost-diego">0 €</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Listado de Gastos -->
+        <section class="items-section">
+            <div class="items-header">
+                <h2>📋 Cotizaciones de Vuelos, Hospedaje y Gastos</h2>
+            </div>
+
+            <div id="items-list"></div>
+
+            <!-- Formulario para Añadir Ítem -->
+            <form class="add-form" onsubmit="addItem(event)">
+                <input type="text" id="new-item-title" placeholder="Ej. Vuelo directo Reykjavik" required>
+                <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
+                <select id="new-item-status">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Reservado">Reservado</option>
+                </select>
+                <button type="submit" class="btn-add">Añadir</button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        // Datos Iniciales
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items')) || [
+            { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente", category: "Vuelos" },
+            { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente", category: "Hospedaje" },
+            { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente", category: "Vehículo" },
+            { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente", category: "Excursión" }
+        ];
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            
+            document.getElementById('theme-icon').innerText = newTheme === 'dark' ? '🌙' : '☀️';
+            document.getElementById('theme-text').innerText = newTheme === 'dark' ? 'Modo Oscuro' : 'Modo Claro';
+        }
+
+        function updateDates(radio) {
+            document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
+            radio.closest('.date-option').classList.add('selected');
+        }
+
+        function renderItems() {
+            const listEl = document.getElementById('items-list');
+            listEl.innerHTML = '';
+
+            let total = 0;
+            let reservedTotal = 0;
+            let reservedCount = 0;
+
+            items.forEach(item => {
+                total += item.price;
+                if(item.status === 'Reservado') {
+                    reservedTotal += item.price;
+                    reservedCount++;
+                }
+
+                listEl.innerHTML += `
+                    <div class="item-row">
+                        <div class="item-info">
+                            <span class="item-title">${item.title}</span>
+                            <div class="item-details">
+                                <span class="badge ${item.status === 'Reservado' ? 'badge-reserved' : 'badge-pending'}">${item.status}</span>
+                                <span>(${(item.price / 4).toFixed(2)} € / pers)</span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <span class="item-price">${item.price.toFixed(2)} €</span>
+                            <button class="btn-delete" onclick="deleteItem(${item.id})">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Actualizar Totales
+            const perPerson = total / 4;
+            document.getElementById('total-budget').innerText = `${total.toFixed(2)} €`;
+            document.getElementById('per-person-budget').innerText = `${perPerson.toFixed(2)} € / persona`;
+            
+            document.getElementById('total-reserved').innerText = `${reservedTotal.toFixed(2)} €`;
+            document.getElementById('reserved-count').innerText = `${reservedCount} ítems reservados`;
+
+            document.getElementById('cost-ximena').innerText = `${perPerson.toFixed(2)} €`;
+            document.getElementById('cost-fiorella').innerText = `${perPerson.toFixed(2)} €`;
+            document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
+            document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
+
+            localStorage.setItem('iceland_2027_items', JSON.stringify(items));
+        }
+
+        function addItem(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-item-title').value;
+            const price = parseFloat(document.getElementById('new-item-price').value);
+            const status = document.getElementById('new-item-status').value;
+
+            items.push({ id: Date.now(), title, price, status });
+            renderItems();
+
+            document.getElementById('new-item-title').value = '';
+            document.getElementById('new-item-price').value = '';
+        }
+
+        function deleteItem(id) {
+            items = items.filter(i => i.id !== id);
+            renderItems();
+        }
+
+        renderItems();
+    </script>
+</body>
+</html>
