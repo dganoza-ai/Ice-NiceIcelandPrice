@@ -457,7 +457,7 @@
             border-left: 3px solid var(--accent-amber);
         }
 
-        /* Guía y Fuentes */
+        /* Guía, Equipaje y Comparador de Tiendas */
         .source-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -479,30 +479,103 @@
             font-weight: 600;
         }
 
-        .guide-grid {
+        .packing-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .guide-box {
+        .packing-category {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .packing-category h4 {
+            font-size: 0.95rem;
+            color: var(--accent-purple);
+            margin-bottom: 12px;
+        }
+
+        .packing-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .packing-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+        }
+
+        /* Cesta Comparativa de Precios */
+        .comparison-section {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 20px;
+            margin-top: 20px;
         }
 
-        .guide-box h4 {
+        .comparison-section h3 {
+            font-size: 1rem;
+            color: var(--accent-emerald);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .store-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .store-card h5 {
             font-size: 0.95rem;
-            color: var(--accent-purple);
-            margin-bottom: 10px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .guide-box ul {
-            padding-left: 18px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.6;
+        .store-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin: 10px 0;
+        }
+
+        .store-btn {
+            display: inline-block;
+            text-align: center;
+            background: var(--accent-cyan);
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 6px;
         }
 
         @media (max-width: 640px) {
@@ -610,7 +683,7 @@
             </section>
         </div>
 
-        <!-- PESTAÑA 2: MAPA INTERACTIVO CON FOTOS EN HD -->
+        <!-- PESTAÑA 2: MAPA INTERACTIVO -->
         <div id="mapa" class="tab-content">
             <div class="source-card">
                 <h3>🗺️ Mapa de la Ruta (Haz clic en un punto para explorar en HD)</h3>
@@ -618,7 +691,6 @@
                 <div id="map"></div>
             </div>
 
-            <!-- TARJETA DETALLADA INFERIOR -->
             <div class="location-detail-card" id="location-inspector">
                 <div class="location-img-wrapper">
                     <img id="loc-img" src="https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1200&auto=format&fit=crop" alt="Reykjavik">
@@ -633,45 +705,63 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 3: GUÍA & EQUIPAJE -->
+        <!-- PESTAÑA 3: GUÍA & EQUIPAJE INTERACTIVO -->
         <div id="guia" class="tab-content">
             <div class="source-card" style="margin-bottom: 20px;">
-                <h3>🎒 Preparación y Consejos para Islandia (Febrero)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Las temperaturas medias en febrero rondan entre los -2°C y 3°C, con fuertes vientos y posibilidad de nieve o hielo en las carreteras. La clave absoluta es vestirse en capas.</p>
+                <h3>🎒 Lista de Equipaje Interactiva (Selecciona lo que necesitas comprar)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Marca los elementos que necesitas adquirir para ver el presupuesto comparativo generado en la cesta de compras abajo.</p>
             </div>
-            <div class="guide-grid">
-                <div class="guide-box">
-                    <h4>🧥 1. Sistema de Capas (Ropa)</h4>
-                    <ul>
-                        <li><strong>Capa Base (Térmica):</strong> 2 juegos de camisetas y mallas térmicas de lana merina o poliéster técnico (nada de algodón).</li>
-                        <li><strong>Capa Intermedia:</strong> Forro polar (*fleece*) grueso o jersey de lana islandesa (*lopapeysa*).</li>
-                        <li><strong>Capa Exterior:</strong> Chaqueta impermeable y cortavientos de alta calidad (Gore-Tex o similar) y pantalones de trekking impermeables.</li>
-                    </ul>
+
+            <!-- Lista de selección -->
+            <div class="packing-list">
+                <div class="packing-category">
+                    <h4>🧥 Capas de Ropa</h4>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Camiseta / Malla Térmica Merino</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="24.99" data-lefties="15.99" data-mountain="45.00" onchange="calculateCart()"> Forro Polar (Fleece)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="69.99" data-lefties="39.99" data-mountain="120.00" onchange="calculateCart()"> Chaqueta Impermeable / Cortavientos</label>
                 </div>
-                <div class="guide-box">
-                    <h4>🥾 2. Calzado & Seguridad</h4>
-                    <ul>
-                        <li><strong>Botas de montaña:</strong> Altas, impermeables, cómodas y con buena suela antideslizante.</li>
-                        <li><strong>Crampones ligeros (Icers):</strong> Imprescindibles en la mochila para caminar seguro sobre aceras y senderos helados.</li>
-                        <li><strong>Calcetines de lana:</strong> Varios pares de calcetines térmicos altos de lana merina.</li>
-                    </ul>
+                <div class="packing-category">
+                    <h4>🥾 Calzado y Nieve</h4>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="49.99" data-lefties="29.99" data-mountain="95.00" onchange="calculateCart()"> Botas de Montaña Impermeables</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Crampones Ligeros Antideslizantes</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="9.99" data-lefties="5.99" data-mountain="15.00" onchange="calculateCart()"> Calcetines Térmicos de Lana Merino</label>
                 </div>
-                <div class="guide-box">
-                    <h4>🧤 3. Accesorios Esenciales</h4>
-                    <ul>
-                        <li>Gorro de lana abrigado y orejeras.</li>
-                        <li>Guantes térmicos cortavientos (preferiblemente táctiles).</li>
-                        <li>Braga de cuello polar o buff.</li>
-                        <li>Gafas de sol (el reflejo del sol sobre la nieve en febrero es muy intenso).</li>
-                    </ul>
+                <div class="packing-category">
+                    <h4>🧤 Accesorios & Extra</h4>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="12.99" data-lefties="7.99" data-mountain="22.00" onchange="calculateCart()"> Guantes Térmicos Táctiles</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="7.99" data-lefties="4.99" data-mountain="12.00" onchange="calculateCart()"> Gorro de Lana y Braga de Cuello</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="15.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Power Bank 10,000mAh (Resistente al Frío)</label>
                 </div>
-                <div class="guide-box">
-                    <h4>🎒 4. Equipaje & Varios</h4>
-                    <ul>
-                        <li><strong>Bañador y toalla ligera de microfibra:</strong> Indispensable para las aguas termales (Blue Lagoon / Sky Lagoon / pozas naturales).</li>
-                        <li><strong>Power bank:</strong> El frío drena rápido las baterías del móvil y la cámara.</li>
-                        <li><strong>Adaptador de enchufe:</strong> En Islandia se usan enchufes europeos estándar (Tipo C/F).</li>
-                    </ul>
+            </div>
+
+            <!-- Cesta de Compra y Comparativa de Tiendas -->
+            <div class="comparison-section">
+                <h3>🛒 Cesta de Compra - Comparativa de Precios por Tienda</h3>
+                <div class="comparison-grid">
+                    <div class="store-card">
+                        <div>
+                            <h5>Decathlon <span>🟦</span></h5>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Calidad técnica estándar para invierno y montaña.</p>
+                        </div>
+                        <div class="store-price" id="total-decathlon">0.00 €</div>
+                        <a href="https://www.decathlon.es" target="_blank" class="store-btn">Ir a Decathlon</a>
+                    </div>
+                    <div class="store-card">
+                        <div>
+                            <h5>Lefties <span>🟥</span></h5>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Opción más económica y urbana.</p>
+                        </div>
+                        <div class="store-price" id="total-lefties">0.00 €</div>
+                        <a href="https://www.lefties.com" target="_blank" class="store-btn">Ir a Lefties</a>
+                    </div>
+                    <div class="store-card">
+                        <div>
+                            <h5>Tienda Técnica Montaña <span>⛰️</span></h5>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Gore-Tex y marcas de alta gama impermeables.</p>
+                        </div>
+                        <div class="store-price" id="total-mountain">0.00 €</div>
+                        <a href="https://www.barrabes.com" target="_blank" class="store-btn" style="background: var(--accent-purple);">Ir a Barrabes / Tienda Técnica</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -711,7 +801,7 @@
             { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v6')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v7')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
@@ -728,6 +818,22 @@
             if(tabId === 'mapa') {
                 setTimeout(() => { map.invalidateSize(); }, 200);
             }
+        }
+
+        function calculateCart() {
+            let decathlonTotal = 0;
+            let leftiesTotal = 0;
+            let mountainTotal = 0;
+
+            document.querySelectorAll('.packing-item input[type="checkbox"]:checked').forEach(cb => {
+                decathlonTotal += parseFloat(cb.getAttribute('data-decathlon') || 0);
+                leftiesTotal += parseFloat(cb.getAttribute('data-lefties') || 0);
+                mountainTotal += parseFloat(cb.getAttribute('data-mountain') || 0);
+            });
+
+            document.getElementById('total-decathlon').innerText = `${decathlonTotal.toFixed(2)} €`;
+            document.getElementById('total-lefties').innerText = `${leftiesTotal.toFixed(2)} €`;
+            document.getElementById('total-mountain').innerText = `${mountainTotal.toFixed(2)} €`;
         }
 
         function loadRandomCuriosity() {
@@ -820,7 +926,7 @@
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v6', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v7', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -841,7 +947,7 @@
             renderItems();
         }
 
-        // Datos de Lugares con Fotografías HD y Curiosidades
+        // Datos de Lugares con Fotografías HD
         const locationsData = [
             { 
                 id: "reykjavik",
