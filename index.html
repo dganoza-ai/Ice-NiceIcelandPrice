@@ -106,6 +106,42 @@
             background: var(--bg-card-hover);
         }
 
+        /* Cuenta Regresiva */
+        .countdown-banner {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .countdown-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+        }
+
+        .countdown-timers {
+            display: flex;
+            gap: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .countdown-timers span {
+            background: var(--input-bg);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+        }
+
         /* Navegación */
         .nav-tabs {
             display: flex;
@@ -288,6 +324,7 @@
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 20px;
+            margin-bottom: 24px;
         }
 
         .items-header h2 {
@@ -389,7 +426,7 @@
             font-size: 0.85rem;
         }
 
-        /* MAPA E INSPECTOR DE LUGAR EN HD */
+        /* MAPA E INSPECTOR */
         #map {
             width: 100%;
             height: 380px;
@@ -407,12 +444,6 @@
             display: grid;
             grid-template-columns: 1fr 1.2fr;
             gap: 0;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .location-img-wrapper {
@@ -457,7 +488,7 @@
             border-left: 3px solid var(--accent-amber);
         }
 
-        /* Guía, Equipaje y Comparador de Tiendas */
+        /* Guía y Fuentes */
         .source-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -516,22 +547,12 @@
             cursor: pointer;
         }
 
-        /* Cesta Comparativa de Precios */
         .comparison-section {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 20px;
             margin-top: 20px;
-        }
-
-        .comparison-section h3 {
-            font-size: 1rem;
-            color: var(--accent-emerald);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .comparison-grid {
@@ -548,14 +569,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-        }
-
-        .store-card h5 {
-            font-size: 0.95rem;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .store-price {
@@ -600,12 +613,23 @@
             </div>
         </header>
 
+        <!-- CUENTA REGRESIVA EN VIVO -->
+        <div class="countdown-banner">
+            <span class="countdown-title">⏳ Cuenta Regresiva para Islandia</span>
+            <div class="countdown-timers" id="countdown">
+                <div><span id="days">00</span> días</div>
+                <div><span id="hours">00</span> hrs</div>
+                <div><span id="mins">00</span> min</div>
+                <div><span id="secs">00</span> seg</div>
+            </div>
+        </div>
+
         <!-- Pestañas -->
         <div class="nav-tabs">
             <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto</button>
             <button onclick="switchTab('mapa', event)">🗺️ Mapa Itinerario</button>
             <button onclick="switchTab('guia', event)">🎒 Guía & Equipaje</button>
-            <button onclick="switchTab('fuentes', event)">🔗 Fuentes</button>
+            <button onclick="switchTab('fuentes', event)">🔗 Fuentes & Clima</button>
         </div>
 
         <!-- PESTAÑA 1: PRESUPUESTO -->
@@ -620,7 +644,7 @@
 
             <section class="control-panel">
                 <div class="sync-info">
-                    <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje y Vehículo</strong></span>
+                    <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje, Vehículo & Súper</strong></span>
                     <span id="last-sync-time">Última actualización automática: Justo ahora</span>
                 </div>
                 <button class="btn-refresh" onclick="simulatePriceUpdate()">
@@ -665,13 +689,13 @@
 
             <section class="items-section">
                 <div class="items-header">
-                    <h2>📋 Cotizaciones en Tiempo Real (Haz clic en el estado para cambiarlo)</h2>
+                    <h2>📋 Cotizaciones en Tiempo Real (Incluyendo Gasolina y Súper Bónus)</h2>
                 </div>
 
                 <div id="items-list"></div>
 
                 <form class="add-form" onsubmit="addItem(event)">
-                    <input type="text" id="new-item-title" placeholder="Ej. Tour Auroras Boreales" required>
+                    <input type="text" id="new-item-title" placeholder="Ej. Gasolina / Súper Bónus" required>
                     <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
                     <select id="new-item-status">
                         <option value="Pendiente">Pendiente</option>
@@ -705,14 +729,13 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 3: GUÍA & EQUIPAJE INTERACTIVO -->
+        <!-- PESTAÑA 3: GUÍA & EQUIPAJE -->
         <div id="guia" class="tab-content">
             <div class="source-card" style="margin-bottom: 20px;">
                 <h3>🎒 Lista de Equipaje Interactiva (Selecciona lo que necesitas comprar)</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted);">Marca los elementos que necesitas adquirir para ver el presupuesto comparativo generado en la cesta de compras abajo.</p>
             </div>
 
-            <!-- Lista de selección -->
             <div class="packing-list">
                 <div class="packing-category">
                     <h4>🧥 Capas de Ropa</h4>
@@ -734,59 +757,59 @@
                 </div>
             </div>
 
-            <!-- Cesta de Compra y Comparativa de Tiendas -->
             <div class="comparison-section">
                 <h3>🛒 Cesta de Compra - Comparativa de Precios por Tienda</h3>
                 <div class="comparison-grid">
                     <div class="store-card">
                         <div>
-                            <h5>Decathlon <span>🟦</span></h5>
-                            <p style="font-size:0.78rem; color:var(--text-muted);">Calidad técnica estándar para invierno y montaña.</p>
+                            <h5>Decathlon 🟦</h5>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Calidad técnica estándar para invierno.</p>
                         </div>
                         <div class="store-price" id="total-decathlon">0.00 €</div>
                         <a href="https://www.decathlon.es" target="_blank" class="store-btn">Ir a Decathlon</a>
                     </div>
                     <div class="store-card">
                         <div>
-                            <h5>Lefties <span>🟥</span></h5>
-                            <p style="font-size:0.78rem; color:var(--text-muted);">Opción más económica y urbana.</p>
+                            <h5>Lefties 🟥</h5>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Opción económica y casual.</p>
                         </div>
                         <div class="store-price" id="total-lefties">0.00 €</div>
                         <a href="https://www.lefties.com" target="_blank" class="store-btn">Ir a Lefties</a>
                     </div>
                     <div class="store-card">
                         <div>
-                            <h5>Tienda Técnica Montaña <span>⛰️</span></h5>
-                            <p style="font-size:0.78rem; color:var(--text-muted);">Gore-Tex y marcas de alta gama impermeables.</p>
+                            <h5>Tienda Técnica ⛰️</h5>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">Gore-Tex y alta montaña profesional.</p>
                         </div>
                         <div class="store-price" id="total-mountain">0.00 €</div>
-                        <a href="https://www.barrabes.com" target="_blank" class="store-btn" style="background: var(--accent-purple);">Ir a Barrabes / Tienda Técnica</a>
+                        <a href="https://www.barrabes.com" target="_blank" class="store-btn" style="background: var(--accent-purple);">Ir a Tienda Técnica</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PESTAÑA 4: FUENTES -->
+        <!-- PESTAÑA 4: FUENTES Y CLIMA -->
         <div id="fuentes" class="tab-content">
             <div class="source-card">
+                <h3>🌤️ Widgets Meteorológicos & Auroras (Imprescindible en Islandia)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Consulta el pronóstico oficial del viento, tormentas y previsión de auroras boreales en directo antes de salir de ruta.</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+                    <a href="https://en.vedur.is/" target="_blank" class="store-btn" style="background: var(--accent-cyan);">☁️ Ver Vedur (Clima Oficial)</a>
+                    <a href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" class="store-btn" style="background: var(--accent-purple);">✨ Ver Pronóstico de Auroras</a>
+                </div>
+            </div>
+            <div class="source-card">
+                <h3>🛒 Supermercados Económicos en Islandia (Bónus & Krónan)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Recomendación: Compra aquí el desayuno, snacks y sándwiches. El logo de Bónus es un cerdito rosa muy fácil de reconocer.</p>
+                <a href="https://www.bonus.is" target="_blank">🔗 Visitar web oficial de Supermercados Bónus</a>
+            </div>
+            <div class="source-card">
                 <h3>✈️ Vuelos (Barcelona BCN - Reikiavik KEF)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Seguimiento de tarifas directas e indirectas con aerolíneas regulares y low-cost.</p>
                 <a href="https://www.google.com/travel/flights" target="_blank">🔗 Ver en Google Flights</a>
             </div>
             <div class="source-card">
-                <h3>🏡 Alojamiento (Cabañas con Jacuzzi / Reikiavik)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Opciones de hospedaje ideales para avistamiento de auroras boreales y descanso geotermal.</p>
-                <a href="https://www.booking.com" target="_blank">🔗 Ver en Booking.com</a>
-            </div>
-            <div class="source-card">
-                <h3>🚙 Alquiler de Vehículo 4x4 (SUV Duster o similar)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Indispensable para carreteras en invierno y seguros de ceniza volcánica/grava.</p>
-                <a href="https://www.bluelacarrental.is" target="_blank">🔗 Ver en Blue Car Rental Islandia</a>
-            </div>
-            <div class="source-card">
-                <h3>🌊 Excursiones (Blue Lagoon / Sky Lagoon)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Entradas a baños termales y tours guiados de auroras.</p>
-                <a href="https://www.bluelagoon.com" target="_blank">🔗 Ver web oficial Blue Lagoon</a>
+                <h3>🏡 Alojamiento & Vehículo 4x4</h3>
+                <a href="https://www.booking.com" target="_blank">🔗 Booking.com</a> &nbsp;|&nbsp; <a href="https://www.bluelacarrental.is" target="_blank">🔗 Blue Car Rental</a>
             </div>
         </div>
     </div>
@@ -794,6 +817,19 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // Cuenta Regresiva al 17 de Febrero de 2027
+        const targetDate = new Date("February 17, 2027 00:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            if(distance > 0) {
+                document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById("secs").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+            }
+        }, 1000);
+
         const islandCuriosities = [
             { cat: "📜 CURIOSIDAD HISTÓRICA", text: "El Althingi, fundado en el año 930 d.C. en Þingvellir, es considerado el parlamento democrático activo más antiguo del mundo." },
             { cat: "🏛️ CURIOSIDAD POLÍTICA", text: "Islandia no cuenta con un ejército permanente; su defensa está respaldada por la OTAN, con una guardia costera especializada." },
@@ -801,11 +837,13 @@
             { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v7')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v8')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
-            { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente" }
+            { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente" },
+            { id: 5, title: "Gasolina estimada (Ruta 5 días)", price: 120, status: "Pendiente" },
+            { id: 6, title: "Compra Supermercado Bónus (4 pers)", price: 180, status: "Pendiente" }
         ];
 
         function switchTab(tabId, e) {
@@ -860,7 +898,7 @@
             items = items.map(item => {
                 if(item.status !== 'Confirmado') {
                     const variation = (Math.random() * 20 - 10);
-                    let newPrice = Math.max(50, item.price + variation);
+                    let newPrice = Math.max(30, item.price + variation);
                     return { ...item, price: parseFloat(newPrice.toFixed(2)) };
                 }
                 return item;
@@ -926,7 +964,7 @@
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v7', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v8', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -947,7 +985,6 @@
             renderItems();
         }
 
-        // Datos de Lugares con Fotografías HD
         const locationsData = [
             { 
                 id: "reykjavik",
@@ -999,7 +1036,6 @@
             }
         ];
 
-        // Inicializar Mapa
         const map = L.map('map').setView([64.1466, -21.9426], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
