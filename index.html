@@ -159,7 +159,7 @@
             background: transparent;
             border: none;
             padding: 10px 12px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             color: var(--text-muted);
             cursor: pointer;
@@ -488,7 +488,7 @@
             border-left: 3px solid var(--accent-amber);
         }
 
-        /* Guía y Fuentes */
+        /* Guía, Equipaje y Calculadora */
         .source-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -512,7 +512,7 @@
 
         .packing-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -535,7 +535,7 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--text-main);
             cursor: pointer;
         }
@@ -591,6 +591,25 @@
             margin-top: 6px;
         }
 
+        /* CALCULADORA DE DEUDAS */
+        .debt-calculator {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .debt-summary {
+            font-size: 0.9rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
         @media (max-width: 640px) {
             .add-form { grid-template-columns: 1fr; }
             .location-detail-card { grid-template-columns: 1fr; }
@@ -627,9 +646,10 @@
         <!-- Pestañas -->
         <div class="nav-tabs">
             <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto</button>
-            <button onclick="switchTab('mapa', event)">🗺️ Mapa Itinerario</button>
+            <button onclick="switchTab('calculadora', event)">🧮 Calculadora Deudas</button>
+            <button onclick="switchTab('mapa', event)">🗺️ Mapa Ruta</button>
             <button onclick="switchTab('guia', event)">🎒 Guía & Equipaje</button>
-            <button onclick="switchTab('fuentes', event)">🔗 Fuentes & Clima</button>
+            <button onclick="switchTab('fuentes', event)">🔗 Clima & Fuentes</button>
         </div>
 
         <!-- PESTAÑA 1: PRESUPUESTO -->
@@ -707,7 +727,34 @@
             </section>
         </div>
 
-        <!-- PESTAÑA 2: MAPA INTERACTIVO -->
+        <!-- PESTAÑA 2: CALCULADORA DE DEUDAS -->
+        <div id="calculadora" class="tab-content">
+            <div class="source-card">
+                <h3>🧮 ¿Quién ha pagado qué? (Calculadora de Saldos Internos)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Registra los pagos adelantados por cada integrante para calcular automáticamente quién debe compensar a quién.</p>
+                
+                <form class="add-form" onsubmit="addExpense(event)">
+                    <select id="payer-name">
+                        <option value="Diego">Diego</option>
+                        <option value="Ximena">Ximena</option>
+                        <option value="Fiorella">Fiorella</option>
+                        <option value="Raquel">Raquel</option>
+                    </select>
+                    <input type="text" id="expense-desc" placeholder="Concepto (Ej. Gasolina N1)" required>
+                    <input type="number" id="expense-amount" placeholder="Importe (€)" step="0.01" required>
+                    <button type="submit" class="btn-add">Añadir Pago</button>
+                </form>
+            </div>
+
+            <div class="debt-calculator">
+                <h4>📊 Resumen de Gastos Pagados por Integrante</h4>
+                <div id="expenses-paid-list" style="margin-top: 10px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+                <h4 style="color: var(--accent-emerald);">💡 Balance y Compensación (Equilibrio a 4 partes iguales)</h4>
+                <div class="debt-summary" id="debt-result">Calculando saldos...</div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: MAPA INTERACTIVO -->
         <div id="mapa" class="tab-content">
             <div class="source-card">
                 <h3>🗺️ Mapa de la Ruta (Haz clic en un punto para explorar en HD)</h3>
@@ -729,31 +776,43 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 3: GUÍA & EQUIPAJE -->
+        <!-- PESTAÑA 4: GUÍA & EQUIPAJE AMPLIADA -->
         <div id="guia" class="tab-content">
             <div class="source-card" style="margin-bottom: 20px;">
-                <h3>🎒 Lista de Equipaje Interactiva (Selecciona lo que necesitas comprar)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Marca los elementos que necesitas adquirir para ver el presupuesto comparativo generado en la cesta de compras abajo.</p>
+                <h3>🎒 Lista de Equipaje Ártico (Febrero 2027)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Selecciona las prendas y accesorios que necesitas adquirir para ver el comparativo de presupuesto entre tiendas.</p>
             </div>
 
             <div class="packing-list">
                 <div class="packing-category">
-                    <h4>🧥 Capas de Ropa</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Camiseta / Malla Térmica Merino</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="24.99" data-lefties="15.99" data-mountain="45.00" onchange="calculateCart()"> Forro Polar (Fleece)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="69.99" data-lefties="39.99" data-mountain="120.00" onchange="calculateCart()"> Chaqueta Impermeable / Cortavientos</label>
+                    <h4>🧥 Capas Base e Intermedias</h4>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Camiseta Térmica Lana Merino (x2)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Mallas Térmicas Inferiores (x2)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="24.99" data-lefties="15.99" data-mountain="45.00" onchange="calculateCart()"> Forro Polar Grueso (Fleece)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="39.99" data-lefties="22.99" data-mountain="75.00" onchange="calculateCart()"> Segunda Capa Polar o Chalecto Acolchado</label>
+                </div>
+                <div class="packing-category">
+                    <h4>🧥 Capas Exteriores e Impermeables</h4>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="69.99" data-lefties="39.99" data-mountain="120.00" onchange="calculateCart()"> Chaqueta Cortavientos e Impermeable (Gore-Tex)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="49.99" data-lefties="29.99" data-mountain="85.00" onchange="calculateCart()"> Pantalones de Montaña Trekking Impermeables</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Cubrepantalón Impermeable de Lluvia</label>
                 </div>
                 <div class="packing-category">
                     <h4>🥾 Calzado y Nieve</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="49.99" data-lefties="29.99" data-mountain="95.00" onchange="calculateCart()"> Botas de Montaña Impermeables</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Crampones Ligeros Antideslizantes</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="9.99" data-lefties="5.99" data-mountain="15.00" onchange="calculateCart()"> Calcetines Térmicos de Lana Merino</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="49.99" data-lefties="29.99" data-mountain="95.00" onchange="calculateCart()"> Botas de Montaña Altas e Impermeables</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Crampones Ligeros Antideslizantes (Icers)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="9.99" data-lefties="5.99" data-mountain="18.00" onchange="calculateCart()"> Calcetines Térmicos Altos Lana Merino (x3)</label>
                 </div>
                 <div class="packing-category">
-                    <h4>🧤 Accesorios & Extra</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="12.99" data-lefties="7.99" data-mountain="22.00" onchange="calculateCart()"> Guantes Térmicos Táctiles</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="7.99" data-lefties="4.99" data-mountain="12.00" onchange="calculateCart()"> Gorro de Lana y Braga de Cuello</label>
+                    <h4>🧤 Accesorios & Supervivencia Ártica</h4>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="12.99" data-lefties="7.99" data-mountain="22.00" onchange="calculateCart()"> Guantes Térmicos Táctiles Cortavientos</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="16.99" data-lefties="10.99" data-mountain="30.00" onchange="calculateCart()"> Manoplas de Pluma o Abrigadas (Extra frío)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="7.99" data-lefties="4.99" data-mountain="12.00" onchange="calculateCart()"> Gorro de Lana Abrigado y Braga de Cuello</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="8.99" data-mountain="24.00" onchange="calculateCart()"> Pasamontañas / Cagoule Cortavientos</label>
                     <label class="packing-item"><input type="checkbox" data-decathlon="15.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Power Bank 10,000mAh (Resistente al Frío)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="9.99" data-lefties="6.99" data-mountain="18.00" onchange="calculateCart()"> Termo Metálico para Bebida Caliente (0.7L)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="12.99" data-lefties="7.99" data-mountain="22.00" onchange="calculateCart()"> Linterna Frontal LED (Búsqueda de Auroras)</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="8.99" data-lefties="5.99" data-mountain="15.00" onchange="calculateCart()"> Crema Solar Facial y Protector Labial</label>
                 </div>
             </div>
 
@@ -788,7 +847,7 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 4: FUENTES Y CLIMA -->
+        <!-- PESTAÑA 5: CLIMA Y FUENTES -->
         <div id="fuentes" class="tab-content">
             <div class="source-card">
                 <h3>🌤️ Widgets Meteorológicos & Auroras (Imprescindible en Islandia)</h3>
@@ -837,13 +896,17 @@
             { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v8')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v9')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
             { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente" },
             { id: 5, title: "Gasolina estimada (Ruta 5 días)", price: 120, status: "Pendiente" },
             { id: 6, title: "Compra Supermercado Bónus (4 pers)", price: 180, status: "Pendiente" }
+        ];
+
+        let expensesPaid = JSON.parse(localStorage.getItem('iceland_2027_expenses_v9')) || [
+            { id: 1, payer: "Diego", desc: "Reserva inicial cabaña", amount: 200 }
         ];
 
         function switchTab(tabId, e) {
@@ -872,6 +935,77 @@
             document.getElementById('total-decathlon').innerText = `${decathlonTotal.toFixed(2)} €`;
             document.getElementById('total-lefties').innerText = `${leftiesTotal.toFixed(2)} €`;
             document.getElementById('total-mountain').innerText = `${mountainTotal.toFixed(2)} €`;
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            const payer = document.getElementById('payer-name').value;
+            const desc = document.getElementById('expense-desc').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+
+            expensesPaid.push({ id: Date.now(), payer, desc, amount });
+            renderExpenses();
+
+            document.getElementById('expense-desc').value = '';
+            document.getElementById('expense-amount').value = '';
+        }
+
+        function deleteExpense(id) {
+            expensesPaid = expensesPaid.filter(ex => ex.id !== id);
+            renderExpenses();
+        }
+
+        function renderExpenses() {
+            const listEl = document.getElementById('expenses-paid-list');
+            listEl.innerHTML = '';
+
+            let totalsByPayer = { Diego: 0, Ximena: 0, Fiorella: 0, Raquel: 0 };
+            let totalSpent = 0;
+
+            expensesPaid.forEach(ex => {
+                totalsByPayer[ex.payer] = (totalsByPayer[ex.payer] || 0) + ex.amount;
+                totalSpent += ex.amount;
+
+                listEl.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-color);">
+                        <span><strong>${ex.payer}</strong> pagó "${ex.desc}"</span>
+                        <div>
+                            <span style="font-weight: 700; color: var(--accent-cyan); margin-right: 10px;">${ex.amount.toFixed(2)} €</span>
+                            <button onclick="deleteExpense(${ex.id})" style="background:none; border:none; color:#ef4444; cursor:pointer;">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const sharePerPerson = totalSpent / 4;
+            let resultHtml = `Total adelantado por el grupo: <strong>${totalSpent.toFixed(2)} €</strong> (Corresponde a <strong>${sharePerPerson.toFixed(2)} €</strong> por persona).<br><br>`;
+
+            let debtors = [];
+            let creditors = [];
+
+            Object.keys(totalsByPayer).forEach(person => {
+                let diff = totalsByPayer[person] - sharePerPerson;
+                if (diff < -0.01) debtors.push({ name: person, amount: Math.abs(diff) });
+                if (diff > 0.01) creditors.push({ name: person, amount: diff });
+            });
+
+            if (debtors.length === 0 && creditors.length === 0) {
+                resultHtml += `✨ ¡Cuentas equilibradas! Nadie le debe nada a nadie por ahora.`;
+            } else {
+                debtors.forEach(debtor => {
+                    creditors.forEach(creditor => {
+                        if (debtor.amount > 0 && creditor.amount > 0) {
+                            let payAmount = Math.min(debtor.amount, creditor.amount);
+                            resultHtml += `➡️ <strong>${debtor.name}</strong> debe pagar <strong>${payAmount.toFixed(2)} €</strong> a <strong>${creditor.name}</strong><br>`;
+                            debtor.amount -= payAmount;
+                            creditor.amount -= payAmount;
+                        }
+                    });
+                });
+            }
+
+            document.getElementById('debt-result').innerHTML = resultHtml;
+            localStorage.setItem('iceland_2027_expenses_v9', JSON.stringify(expensesPaid));
         }
 
         function loadRandomCuriosity() {
@@ -964,7 +1098,7 @@
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v8', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v9', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -1061,6 +1195,7 @@
         loadRandomCuriosity();
         updateLastSyncLabel();
         renderItems();
+        renderExpenses();
     </script>
 </body>
 </html>
