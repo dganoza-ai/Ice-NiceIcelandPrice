@@ -106,7 +106,7 @@
             background: var(--bg-card-hover);
         }
 
-        /* Sistema de Pestañas */
+        /* Navegación */
         .nav-tabs {
             display: flex;
             background: var(--bg-card);
@@ -144,7 +144,7 @@
             display: block;
         }
 
-        /* Banner de Curiosidad Rotativa */
+        /* Banner Curiosidad */
         .curiosity-banner {
             background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(192, 132, 252, 0.1));
             border: 1px solid var(--border-color);
@@ -193,10 +193,6 @@
             gap: 2px;
         }
 
-        .sync-info strong {
-            color: var(--text-main);
-        }
-
         .btn-refresh {
             background: var(--accent-cyan);
             color: #ffffff;
@@ -208,7 +204,7 @@
             font-size: 0.85rem;
         }
 
-        /* Resumen general */
+        /* Tarjetas Presupuesto */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -244,7 +240,7 @@
             margin-top: 4px;
         }
 
-        /* Desglose por Integrante */
+        /* Desglose de Integrantes */
         .travelers-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -286,7 +282,7 @@
             color: var(--accent-cyan);
         }
 
-        /* Listado de Gastos */
+        /* Lista de Gastos */
         .items-section {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -294,13 +290,10 @@
             padding: 20px;
         }
 
-        .items-header {
-            margin-bottom: 16px;
-        }
-
         .items-header h2 {
             font-size: 1rem;
             font-weight: 600;
+            margin-bottom: 16px;
         }
 
         .item-row {
@@ -396,15 +389,75 @@
             font-size: 0.85rem;
         }
 
-        /* Mapa y Tarjetas Informativas */
+        /* MAPA E INSPECTOR DE LUGAR EN HD */
         #map {
             width: 100%;
-            height: 420px;
+            height: 380px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
             margin-top: 10px;
         }
 
+        .location-detail-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 0;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .location-img-wrapper {
+            width: 100%;
+            height: 100%;
+            min-height: 220px;
+            overflow: hidden;
+        }
+
+        .location-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .location-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .location-content h4 {
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        .location-content p {
+            font-size: 0.88rem;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .location-curiosity {
+            font-size: 0.82rem;
+            color: var(--accent-amber);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 10px 12px;
+            border-radius: 10px;
+            border-left: 3px solid var(--accent-amber);
+        }
+
+        /* Guía y Fuentes */
         .source-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -425,9 +478,6 @@
             text-decoration: none;
             font-weight: 600;
         }
-        .source-card a:hover {
-            text-decoration: underline;
-        }
 
         .guide-grid {
             display: grid;
@@ -446,9 +496,6 @@
             font-size: 0.95rem;
             color: var(--accent-purple);
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .guide-box ul {
@@ -459,9 +506,8 @@
         }
 
         @media (max-width: 640px) {
-            .add-form {
-                grid-template-columns: 1fr;
-            }
+            .add-form { grid-template-columns: 1fr; }
+            .location-detail-card { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -481,7 +527,7 @@
             </div>
         </header>
 
-        <!-- Pestañas de Navegación -->
+        <!-- Pestañas -->
         <div class="nav-tabs">
             <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto</button>
             <button onclick="switchTab('mapa', event)">🗺️ Mapa Itinerario</button>
@@ -491,7 +537,6 @@
 
         <!-- PESTAÑA 1: PRESUPUESTO -->
         <div id="presupuesto" class="tab-content active">
-            <!-- Banner de Curiosidad Rotativa -->
             <div class="curiosity-banner" onclick="loadRandomCuriosity()">
                 <div class="curiosity-title" id="curiosity-category">
                     <span>🏛️ CURIOSIDAD POLÍTICA E HISTÓRICA</span>
@@ -500,7 +545,6 @@
                 <span class="curiosity-text" id="curiosity-text">Cargando datos de Islandia...</span>
             </div>
 
-            <!-- Panel de Control y Precios en Vivo -->
             <section class="control-panel">
                 <div class="sync-info">
                     <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje y Vehículo</strong></span>
@@ -511,7 +555,6 @@
                 </button>
             </section>
 
-            <!-- Tarjetas de Resumen General -->
             <section class="summary-grid">
                 <div class="summary-card">
                     <label>Presupuesto Total Estimado</label>
@@ -525,7 +568,6 @@
                 </div>
             </section>
 
-            <!-- Desglose por Integrante -->
             <section class="travelers-card">
                 <h2>👥 Presupuesto por Persona (Ximena, Fiorella, Raquel, Diego)</h2>
                 <div class="travelers-grid">
@@ -548,7 +590,6 @@
                 </div>
             </section>
 
-            <!-- Listado de Gastos -->
             <section class="items-section">
                 <div class="items-header">
                     <h2>📋 Cotizaciones en Tiempo Real (Haz clic en el estado para cambiarlo)</h2>
@@ -556,7 +597,6 @@
 
                 <div id="items-list"></div>
 
-                <!-- Formulario para Añadir Ítem -->
                 <form class="add-form" onsubmit="addItem(event)">
                     <input type="text" id="new-item-title" placeholder="Ej. Tour Auroras Boreales" required>
                     <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
@@ -570,12 +610,26 @@
             </section>
         </div>
 
-        <!-- PESTAÑA 2: MAPA INTERACTIVO -->
+        <!-- PESTAÑA 2: MAPA INTERACTIVO CON FOTOS EN HD -->
         <div id="mapa" class="tab-content">
             <div class="source-card">
-                <h3>🗺️ Ruta Emblemática (5 Días / 4 Noches)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Haz clic en los marcadores del mapa para ver una descripción detallada de cada punto clave que visitaremos en febrero.</p>
+                <h3>🗺️ Mapa de la Ruta (Haz clic en un punto para explorar en HD)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Haz clic en cualquiera de los marcadores del mapa para ver la foto de alta resolución y la descripción del lugar abajo.</p>
                 <div id="map"></div>
+            </div>
+
+            <!-- TARJETA DETALLADA INFERIOR -->
+            <div class="location-detail-card" id="location-inspector">
+                <div class="location-img-wrapper">
+                    <img id="loc-img" src="https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1200&auto=format&fit=crop" alt="Reykjavik">
+                </div>
+                <div class="location-content">
+                    <h4 id="loc-title">Reikiavik (Base Principal)</h4>
+                    <p id="loc-desc">Capital de Islandia y base de operaciones del viaje. Una ciudad moderna, limpia y acogedora repleta de cafeterías con encanto, arquitectura vanguardista y la imponente iglesia Hallgrímskirkja.</p>
+                    <div class="location-curiosity" id="loc-curiosity">
+                        <strong>💡 Dato de interés:</strong> Es la capital soberana situada más al norte del planeta y el 100% de su calefacción urbana proviene de agua geotérmica subterránea.
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -622,7 +676,7 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 4: FUENTES Y ENLACES -->
+        <!-- PESTAÑA 4: FUENTES -->
         <div id="fuentes" class="tab-content">
             <div class="source-card">
                 <h3>✈️ Vuelos (Barcelona BCN - Reikiavik KEF)</h3>
@@ -657,7 +711,7 @@
             { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v5')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v6')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
@@ -766,7 +820,7 @@
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v5', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v6', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -787,48 +841,79 @@
             renderItems();
         }
 
-        // Inicializar Mapa Leaflet con Descripciones
+        // Datos de Lugares con Fotografías HD y Curiosidades
+        const locationsData = [
+            { 
+                id: "reykjavik",
+                name: "Reikiavik (Base Principal)", 
+                coords: [64.1466, -21.9426],
+                desc: "Capital de Islandia y base de operaciones del viaje. Una ciudad moderna, limpia y acogedora repleta de cafeterías con encanto, arquitectura vanguardista y la imponente iglesia Hallgrímskirkja.",
+                curiosity: "Es la capital soberana situada más al norte del planeta y el 100% de su calefacción urbana proviene de agua geotérmica subterránea.",
+                img: "https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1200&auto=format&fit=crop"
+            },
+            { 
+                id: "thingvellir",
+                name: "Parque Nacional Þingvellir", 
+                coords: [64.2559, -21.1197],
+                desc: "Parque emblemático donde se encuentra la grieta tectónica entre Norteamérica y Eurasia. Aquí se fundó el parlamento activo más antiguo del mundo en el año 930 d.C.",
+                curiosity: "Puedes caminar literalmente por el cañón entre los dos continentes, los cuales se separan unos 2 centímetros cada año.",
+                img: "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?q=80&w=1200&auto=format&fit=crop"
+            },
+            { 
+                id: "geysir",
+                name: "Zona Geotérmica de Geysir", 
+                coords: [64.3104, -20.3025],
+                desc: "Valle geotérmico lleno de fumarolas y fuentes hirvientes. Es el lugar que dio nombre a todos los 'géiseres' del mundo.",
+                curiosity: "El géiser Strokkur en esta zona entra en erupción cada 6-10 minutos, alcanzando alturas de hasta 30 metros de agua hirviendo.",
+                img: "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=1200&auto=format&fit=crop"
+            },
+            { 
+                id: "gullfoss",
+                name: "Cascada Gullfoss", 
+                coords: [64.3271, -20.1199],
+                desc: "Conocida como la 'Cascada Dorada', es un impresionante salto de agua en dos escalones que cae al cañón del río Hvítá. En invierno luce rodeada de témpanos de hielo.",
+                curiosity: "En el siglo XX estuvo a punto de convertirse en una hidroeléctrica, pero una lucha activista local logró salvarla para conservarla protegida.",
+                img: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1200&auto=format&fit=crop"
+            },
+            { 
+                id: "vik",
+                name: "Playa de Arena Negra (Vík / Reynisfjara)", 
+                coords: [63.4186, -19.0060],
+                desc: "Playa de arena basáltica totalmente negra famosa por sus imponentes columnas de basalto y las formaciones rocosas de Reynisdrangar en el mar.",
+                curiosity: "Sus icónicas columnas de basalto parecen esculpidas a mano, pero son el resultado natural del enfriamiento rápido de la lava volcánica al tocar el agua.",
+                img: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1200&auto=format&fit=crop"
+            },
+            { 
+                id: "bluelagoon",
+                name: "Blue Lagoon (Laguna Azul)", 
+                coords: [63.8804, -22.4495],
+                desc: "Spa geotermal de fama mundial con aguas de color azul turquesa ricas en sílice y minerales que se mantienen constantemente a 38°C.",
+                curiosity: "El barro blanco rico en sílice que hay en el fondo de la piscina tiene propiedades cosméticas regeneradoras únicas para la piel.",
+                img: "https://images.unsplash.com/photo-1508672019048-805479767517?q=80&w=1200&auto=format&fit=crop"
+            }
+        ];
+
+        // Inicializar Mapa
         const map = L.map('map').setView([64.1466, -21.9426], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        const locations = [
-            { 
-                name: "Reikiavik (Base Principal)", 
-                coords: [64.1466, -21.9426],
-                desc: "Nuestra base de operaciones. Ciudad acogedora, llena de arte callejero, cafés increíbles y la emblemática iglesia Hallgrímskirkja."
-            },
-            { 
-                name: "Parque Nacional Þingvellir", 
-                coords: [64.2559, -21.1197],
-                desc: "Lugar histórico y geológico único. Aquí caminaremos literalmente entre las placas tectónicas de Norteamérica y Eurasia."
-            },
-            { 
-                name: "Zona Geothermal de Geysir", 
-                coords: [64.3104, -20.3025],
-                desc: "Valle geotérmico activo donde el géiser Strokkur entra en erupción cada pocos minutos lanzando agua hirviendo al aire."
-            },
-            { 
-                name: "Cascada Gullfoss", 
-                coords: [64.3271, -20.1199],
-                desc: "La 'Cascada Dorada'. En invierno ofrece un espectáculo imponente con enormes paredes de hielo esculpidas por el río Hvítá."
-            },
-            { 
-                name: "Playa de Arena Negra (Vík)", 
-                coords: [63.4186, -19.0060],
-                desc: "Famosa playa de arena basáltica negra, formaciones de columnas de basalto y vistas espectaculares de los acantilados."
-            },
-            { 
-                name: "Blue Lagoon", 
-                coords: [63.8804, -22.4495],
-                desc: "El famoso spa geotermal de aguas ricas en sílice y minerales humeantes a 38°C, perfecto para relajarse rodeados de campos de lava."
-            }
-        ];
+        function updateLocationInspector(loc) {
+            document.getElementById('loc-img').src = loc.img;
+            document.getElementById('loc-img').alt = loc.name;
+            document.getElementById('loc-title').innerText = loc.name;
+            document.getElementById('loc-desc').innerText = loc.desc;
+            document.getElementById('loc-curiosity').innerHTML = `<strong>💡 Dato de interés:</strong> ${loc.curiosity}`;
+        }
 
-        locations.forEach(loc => {
-            L.marker(loc.coords).addTo(map).bindPopup(`<b>${loc.name}</b><br><span style="font-size:0.8rem; color:#555;">${loc.desc}</span>`);
+        locationsData.forEach(loc => {
+            const marker = L.marker(loc.coords).addTo(map);
+            marker.bindPopup(`<b>${loc.name}</b><br><span style="font-size:0.75rem;">Haz clic para ver fotos en HD e info abajo</span>`);
+            marker.on('click', () => {
+                updateLocationInspector(loc);
+            });
         });
 
         loadRandomCuriosity();
