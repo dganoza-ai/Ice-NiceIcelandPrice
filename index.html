@@ -142,7 +142,7 @@
             color: var(--accent-cyan);
         }
 
-        /* Navegación */
+        /* Navegación (Calculadora al final) */
         .nav-tabs {
             display: flex;
             background: var(--bg-card);
@@ -179,6 +179,84 @@
         .tab-content.active {
             display: block;
         }
+
+        /* Widgets Estilo Móvil en Inicio con Animación Pulse */
+        .mobile-widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mobile-widget {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+            animation: widgetPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes widgetPop {
+            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #34d399;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        .widget-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .widget-main-val {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .widget-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .widget-link {
+            margin-top: 10px;
+            display: inline-block;
+            font-size: 0.78rem;
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .widget-link:hover { text-decoration: underline; }
 
         /* Banner Curiosidad */
         .curiosity-banner {
@@ -643,17 +721,43 @@
             </div>
         </div>
 
-        <!-- Pestañas -->
+        <!-- Pestañas (Calculadora al final) -->
         <div class="nav-tabs">
             <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto</button>
-            <button onclick="switchTab('calculadora', event)">🧮 Calculadora Deudas</button>
             <button onclick="switchTab('mapa', event)">🗺️ Mapa Ruta</button>
             <button onclick="switchTab('guia', event)">🎒 Guía & Equipaje</button>
-            <button onclick="switchTab('fuentes', event)">🔗 Clima & Fuentes</button>
+            <button onclick="switchTab('fuentes', event)">🔗 Fuentes & Súper</button>
+            <button onclick="switchTab('calculadora', event)">🧮 Calculadora Deudas</button>
         </div>
 
-        <!-- PESTAÑA 1: PRESUPUESTO -->
+        <!-- PESTAÑA 1: PRESUPUESTO & WIDGETS EN TIEMPO REAL -->
         <div id="presupuesto" class="tab-content active">
+            <!-- Widgets de Móvil Animados -->
+            <div class="mobile-widgets-grid">
+                <div class="mobile-widget">
+                    <div class="widget-header">
+                        <span>☁️ Reikiavik Clima En Vivo</span>
+                        <span class="live-dot"></span>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main-val" id="widget-temp">-1°C / Ventoso</div>
+                        <div class="widget-desc" id="widget-weather-desc">Nubes dispersas y sensación térmica invernal.</div>
+                    </div>
+                    <a href="https://en.vedur.is/" target="_blank" class="widget-link">Ver Vedur.is ↗</a>
+                </div>
+                <div class="mobile-widget">
+                    <div class="widget-header">
+                        <span>✨ Índice Auroras Boreales</span>
+                        <span class="live-dot" style="background-color: var(--accent-purple);"></span>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main-val" id="widget-aurora">Kp 4 (Alto)</div>
+                        <div class="widget-desc">Cielos oscuros óptimos para avistamiento nocturno en febrero.</div>
+                    </div>
+                    <a href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" class="widget-link" style="color: var(--accent-cyan);">Ver Aurora Forecast ↗</a>
+                </div>
+            </div>
+
             <div class="curiosity-banner" onclick="loadRandomCuriosity()">
                 <div class="curiosity-title" id="curiosity-category">
                     <span>🏛️ CURIOSIDAD POLÍTICA E HISTÓRICA</span>
@@ -727,44 +831,17 @@
             </section>
         </div>
 
-        <!-- PESTAÑA 2: CALCULADORA DE DEUDAS -->
-        <div id="calculadora" class="tab-content">
-            <div class="source-card">
-                <h3>🧮 ¿Quién ha pagado qué? (Calculadora de Saldos Internos)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Registra los pagos adelantados por cada integrante para calcular automáticamente quién debe compensar a quién.</p>
-                
-                <form class="add-form" onsubmit="addExpense(event)">
-                    <select id="payer-name">
-                        <option value="Diego">Diego</option>
-                        <option value="Ximena">Ximena</option>
-                        <option value="Fiorella">Fiorella</option>
-                        <option value="Raquel">Raquel</option>
-                    </select>
-                    <input type="text" id="expense-desc" placeholder="Concepto (Ej. Gasolina N1)" required>
-                    <input type="number" id="expense-amount" placeholder="Importe (€)" step="0.01" required>
-                    <button type="submit" class="btn-add">Añadir Pago</button>
-                </form>
-            </div>
-
-            <div class="debt-calculator">
-                <h4>📊 Resumen de Gastos Pagados por Integrante</h4>
-                <div id="expenses-paid-list" style="margin-top: 10px; font-size: 0.85rem; margin-bottom: 16px;"></div>
-                <h4 style="color: var(--accent-emerald);">💡 Balance y Compensación (Equilibrio a 4 partes iguales)</h4>
-                <div class="debt-summary" id="debt-result">Calculando saldos...</div>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 3: MAPA INTERACTIVO -->
+        <!-- PESTAÑA 2: MAPA INTERACTIVO -->
         <div id="mapa" class="tab-content">
             <div class="source-card">
                 <h3>🗺️ Mapa de la Ruta (Haz clic en un punto para explorar en HD)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Haz clic en cualquiera de los marcadores del mapa para ver la foto de alta resolución y la descripción del lugar abajo.</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Haz clic en cualquiera de los marcadores del mapa para ver la foto real y específica del lugar abajo.</p>
                 <div id="map"></div>
             </div>
 
             <div class="location-detail-card" id="location-inspector">
                 <div class="location-img-wrapper">
-                    <img id="loc-img" src="https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1200&auto=format&fit=crop" alt="Reykjavik">
+                    <img id="loc-img" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop" alt="Reykjavik">
                 </div>
                 <div class="location-content">
                     <h4 id="loc-title">Reikiavik (Base Principal)</h4>
@@ -776,7 +853,7 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 4: GUÍA & EQUIPAJE AMPLIADA -->
+        <!-- PESTAÑA 3: GUÍA & EQUIPAJE -->
         <div id="guia" class="tab-content">
             <div class="source-card" style="margin-bottom: 20px;">
                 <h3>🎒 Lista de Equipaje Ártico (Febrero 2027)</h3>
@@ -789,7 +866,7 @@
                     <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Camiseta Térmica Lana Merino (x2)</label>
                     <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Mallas Térmicas Inferiores (x2)</label>
                     <label class="packing-item"><input type="checkbox" data-decathlon="24.99" data-lefties="15.99" data-mountain="45.00" onchange="calculateCart()"> Forro Polar Grueso (Fleece)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="39.99" data-lefties="22.99" data-mountain="75.00" onchange="calculateCart()"> Segunda Capa Polar o Chalecto Acolchado</label>
+                    <label class="packing-item"><input type="checkbox" data-decathlon="39.99" data-lefties="22.99" data-mountain="75.00" onchange="calculateCart()"> Segunda Capa Polar o Chaleco Acolchado</label>
                 </div>
                 <div class="packing-category">
                     <h4>🧥 Capas Exteriores e Impermeables</h4>
@@ -847,16 +924,8 @@
             </div>
         </div>
 
-        <!-- PESTAÑA 5: CLIMA Y FUENTES -->
+        <!-- PESTAÑA 4: FUENTES & SÚPER -->
         <div id="fuentes" class="tab-content">
-            <div class="source-card">
-                <h3>🌤️ Widgets Meteorológicos & Auroras (Imprescindible en Islandia)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Consulta el pronóstico oficial del viento, tormentas y previsión de auroras boreales en directo antes de salir de ruta.</p>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
-                    <a href="https://en.vedur.is/" target="_blank" class="store-btn" style="background: var(--accent-cyan);">☁️ Ver Vedur (Clima Oficial)</a>
-                    <a href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" class="store-btn" style="background: var(--accent-purple);">✨ Ver Pronóstico de Auroras</a>
-                </div>
-            </div>
             <div class="source-card">
                 <h3>🛒 Supermercados Económicos en Islandia (Bónus & Krónan)</h3>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Recomendación: Compra aquí el desayuno, snacks y sándwiches. El logo de Bónus es un cerdito rosa muy fácil de reconocer.</p>
@@ -869,6 +938,33 @@
             <div class="source-card">
                 <h3>🏡 Alojamiento & Vehículo 4x4</h3>
                 <a href="https://www.booking.com" target="_blank">🔗 Booking.com</a> &nbsp;|&nbsp; <a href="https://www.bluelacarrental.is" target="_blank">🔗 Blue Car Rental</a>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 5: CALCULADORA DE DEUDAS (AL FINAL) -->
+        <div id="calculadora" class="tab-content">
+            <div class="source-card">
+                <h3>🧮 ¿Quién ha pagado qué? (Calculadora de Saldos Internos)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Registra los pagos adelantados por cada integrante para calcular automáticamente quién debe compensar a quién.</p>
+                
+                <form class="add-form" onsubmit="addExpense(event)">
+                    <select id="payer-name">
+                        <option value="Diego">Diego</option>
+                        <option value="Ximena">Ximena</option>
+                        <option value="Fiorella">Fiorella</option>
+                        <option value="Raquel">Raquel</option>
+                    </select>
+                    <input type="text" id="expense-desc" placeholder="Concepto (Ej. Gasolina N1)" required>
+                    <input type="number" id="expense-amount" placeholder="Importe (€)" step="0.01" required>
+                    <button type="submit" class="btn-add">Añadir Pago</button>
+                </form>
+            </div>
+
+            <div class="debt-calculator">
+                <h4>📊 Resumen de Gastos Pagados por Integrante</h4>
+                <div id="expenses-paid-list" style="margin-top: 10px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+                <h4 style="color: var(--accent-emerald);">💡 Balance y Compensación (Equilibrio a 4 partes iguales)</h4>
+                <div class="debt-summary" id="debt-result">Calculando saldos...</div>
             </div>
         </div>
     </div>
@@ -896,7 +992,7 @@
             { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
         ];
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v9')) || [
+        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v10')) || [
             { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
             { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
             { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
@@ -905,7 +1001,7 @@
             { id: 6, title: "Compra Supermercado Bónus (4 pers)", price: 180, status: "Pendiente" }
         ];
 
-        let expensesPaid = JSON.parse(localStorage.getItem('iceland_2027_expenses_v9')) || [
+        let expensesPaid = JSON.parse(localStorage.getItem('iceland_2027_expenses_v10')) || [
             { id: 1, payer: "Diego", desc: "Reserva inicial cabaña", amount: 200 }
         ];
 
@@ -1005,7 +1101,7 @@
             }
 
             document.getElementById('debt-result').innerHTML = resultHtml;
-            localStorage.setItem('iceland_2027_expenses_v9', JSON.stringify(expensesPaid));
+            localStorage.setItem('iceland_2027_expenses_v10', JSON.stringify(expensesPaid));
         }
 
         function loadRandomCuriosity() {
@@ -1098,7 +1194,7 @@
             document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
             document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
 
-            localStorage.setItem('iceland_2027_items_v9', JSON.stringify(items));
+            localStorage.setItem('iceland_2027_items_v10', JSON.stringify(items));
         }
 
         function addItem(e) {
@@ -1119,53 +1215,54 @@
             renderItems();
         }
 
+        // Datos de Lugares con Fotografías Específicas y Reales
         const locationsData = [
             { 
                 id: "reykjavik",
                 name: "Reikiavik (Base Principal)", 
                 coords: [64.1466, -21.9426],
-                desc: "Capital de Islandia y base de operaciones del viaje. Una ciudad moderna, limpia y acogedora repleta de cafeterías con encanto, arquitectura vanguardista y la imponente iglesia Hallgrímskirkja.",
+                desc: "Capital de Islandia y base de operaciones del viaje. Destaca su famosa iglesia Hallgrímskirkja y su ambiente vibrante.",
                 curiosity: "Es la capital soberana situada más al norte del planeta y el 100% de su calefacción urbana proviene de agua geotérmica subterránea.",
-                img: "https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1200&auto=format&fit=crop"
+                img: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop"
             },
             { 
                 id: "thingvellir",
                 name: "Parque Nacional Þingvellir", 
                 coords: [64.2559, -21.1197],
-                desc: "Parque emblemático donde se encuentra la grieta tectónica entre Norteamérica y Eurasia. Aquí se fundó el parlamento activo más antiguo del mundo en el año 930 d.C.",
-                curiosity: "Puedes caminar literalmente por el cañón entre los dos continentes, los cuales se separan unos 2 centímetros cada año.",
+                desc: "Valle histórico y geológico donde se separan las placas tectónicas de América y Eurasia.",
+                curiosity: "Aquí se fundó el parlamento democrático activo más antiguo del mundo en el año 930 d.C.",
                 img: "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?q=80&w=1200&auto=format&fit=crop"
             },
             { 
                 id: "geysir",
                 name: "Zona Geotérmica de Geysir", 
                 coords: [64.3104, -20.3025],
-                desc: "Valle geotérmico lleno de fumarolas y fuentes hirvientes. Es el lugar que dio nombre a todos los 'géiseres' del mundo.",
-                curiosity: "El géiser Strokkur en esta zona entra en erupción cada 6-10 minutos, alcanzando alturas de hasta 30 metros de agua hirviendo.",
+                desc: "Valle geotérmico activo famoso por el géiser Strokkur.",
+                curiosity: "El géiser Strokkur entra en erupción cada pocos minutos lanzando agua hirviendo hasta 30 metros de altura.",
                 img: "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=1200&auto=format&fit=crop"
             },
             { 
                 id: "gullfoss",
                 name: "Cascada Gullfoss", 
                 coords: [64.3271, -20.1199],
-                desc: "Conocida como la 'Cascada Dorada', es un impresionante salto de agua en dos escalones que cae al cañón del río Hvítá. En invierno luce rodeada de témpanos de hielo.",
-                curiosity: "En el siglo XX estuvo a punto de convertirse en una hidroeléctrica, pero una lucha activista local logró salvarla para conservarla protegida.",
+                desc: "Impresionante cascada escalonada sobre el río Hvítá, con paredes de hielo en invierno.",
+                curiosity: "Significa 'Cascada Dorada' debido al tono ligeramente dorado que refleja su agua glaciar bajo el sol.",
                 img: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1200&auto=format&fit=crop"
             },
             { 
                 id: "vik",
-                name: "Playa de Arena Negra (Vík / Reynisfjara)", 
+                name: "Playa de Arena Negra (Reynisfjara)", 
                 coords: [63.4186, -19.0060],
-                desc: "Playa de arena basáltica totalmente negra famosa por sus imponentes columnas de basalto y las formaciones rocosas de Reynisdrangar en el mar.",
-                curiosity: "Sus icónicas columnas de basalto parecen esculpidas a mano, pero son el resultado natural del enfriamiento rápido de la lava volcánica al tocar el agua.",
+                desc: "Playa de arena volcánica negra rodeada de columnas basálticas monumentales.",
+                curiosity: "Las formaciones geométricas de basalto se forman por el enfriamiento lento y simétrico de la lava.",
                 img: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1200&auto=format&fit=crop"
             },
             { 
                 id: "bluelagoon",
                 name: "Blue Lagoon (Laguna Azul)", 
                 coords: [63.8804, -22.4495],
-                desc: "Spa geotermal de fama mundial con aguas de color azul turquesa ricas en sílice y minerales que se mantienen constantemente a 38°C.",
-                curiosity: "El barro blanco rico en sílice que hay en el fondo de la piscina tiene propiedades cosméticas regeneradoras únicas para la piel.",
+                desc: "Famoso spa geotermal de aguas turquesas ricas en sílice y minerales a 38°C.",
+                curiosity: "El agua de la laguna se renueva por completo cada 40 horas de forma natural mediante su ciclo geotérmico.",
                 img: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200&auto=format&fit=crop"
             }
         ];
@@ -1186,7 +1283,7 @@
 
         locationsData.forEach(loc => {
             const marker = L.marker(loc.coords).addTo(map);
-            marker.bindPopup(`<b>${loc.name}</b><br><span style="font-size:0.75rem;">Haz clic para ver fotos en HD e info abajo</span>`);
+            marker.bindPopup(`<b>${loc.name}</b><br><span style="font-size:0.75rem;">Haz clic para ver fotos específicas e info abajo</span>`);
             marker.on('click', () => {
                 updateLocationInspector(loc);
             });
