@@ -1,1298 +1,958 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ice, Ice, Paradise | Islandia 2027</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS para el Mapa Interactivo -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        :root[data-theme="dark"] {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-cyan: #38bdf8;
-            --accent-emerald: #34d399;
-            --accent-purple: #c084fc;
-            --accent-amber: #fbbf24;
-            --input-bg: #0f172a;
-        }
-
-        :root[data-theme="light"] {
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-card-hover: #f1f5f9;
-            --border-color: #e2e8f0;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --accent-cyan: #0284c7;
-            --accent-emerald: #059669;
-            --accent-purple: #9333ea;
-            --accent-amber: #d97706;
-            --input-bg: #f8fafc;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            padding: 24px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 900px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .title-group h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .title-group p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn-icon {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-icon:hover {
-            background: var(--bg-card-hover);
-        }
-
-        /* Cuenta Regresiva */
-        .countdown-banner {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 14px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .countdown-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--accent-purple);
-            text-transform: uppercase;
-        }
-
-        .countdown-timers {
-            display: flex;
-            gap: 12px;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .countdown-timers span {
-            background: var(--input-bg);
-            padding: 4px 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            color: var(--accent-cyan);
-        }
-
-        /* Navegación (Calculadora al final) */
-        .nav-tabs {
-            display: flex;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 4px;
-            border-radius: 14px;
-            margin-bottom: 24px;
-            gap: 4px;
-            overflow-x: auto;
-        }
-
-        .nav-tabs button {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 10px 12px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
-
-        .nav-tabs button.active {
-            background: var(--accent-cyan);
-            color: #ffffff;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Widgets Estilo Móvil en Inicio con Animación Pulse */
-        .mobile-widgets-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .mobile-widget {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 18px;
-            position: relative;
-            overflow: hidden;
-            animation: widgetPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes widgetPop {
-            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .widget-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #34d399;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
-            animation: pulse-ring 2s infinite;
-        }
-
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
-        }
-
-        .widget-body {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .widget-main-val {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
-        }
-
-        .widget-desc {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-        }
-
-        .widget-link {
-            margin-top: 10px;
-            display: inline-block;
-            font-size: 0.78rem;
-            color: var(--accent-purple);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .widget-link:hover { text-decoration: underline; }
-
-        /* Banner Curiosidad */
-        .curiosity-banner {
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(192, 132, 252, 0.1));
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            cursor: pointer;
-        }
-
-        .curiosity-title {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--accent-cyan);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .curiosity-text {
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-top: 6px;
-            display: block;
-        }
-
-        /* Panel de Control */
-        .control-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .sync-info {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .btn-refresh {
-            background: var(--accent-cyan);
-            color: #ffffff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        /* Tarjetas Presupuesto */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .summary-card label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .summary-card .amount {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 6px;
-        }
-
-        .summary-card .per-person {
-            font-size: 0.85rem;
-            color: var(--accent-emerald);
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        /* Desglose de Integrantes */
-        .travelers-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .travelers-card h2 {
-            font-size: 1rem;
-            margin-bottom: 16px;
-            font-weight: 600;
-            color: var(--accent-purple);
-        }
-
-        .travelers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-        }
-
-        .traveler-badge {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .traveler-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-        }
-
-        .traveler-cost {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
-        }
-
-        /* Lista de Gastos */
-        .items-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .items-header h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .item-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .item-details {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .status-btn {
-            border: none;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 650;
-            cursor: pointer;
-        }
-        .status-Pendiente { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-        .status-Confirmado { background: rgba(52, 211, 153, 0.15); color: #34d399; }
-        .status-Espera { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-        .status-Cancelado { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-
-        .item-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .item-price {
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .add-form {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px dashed var(--border-color);
-        }
-
-        input, select {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        .btn-add {
-            background: var(--accent-cyan);
-            color: #ffffff;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        /* MAPA E INSPECTOR */
-        #map {
-            width: 100%;
-            height: 380px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            margin-top: 10px;
-        }
-
-        .location-detail-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 0;
-        }
-
-        .location-img-wrapper {
-            width: 100%;
-            height: 100%;
-            min-height: 220px;
-            overflow: hidden;
-        }
-
-        .location-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .location-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .location-content h4 {
-            font-size: 1.1rem;
-            color: var(--accent-cyan);
-            margin-bottom: 8px;
-        }
-
-        .location-content p {
-            font-size: 0.88rem;
-            color: var(--text-main);
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .location-curiosity {
-            font-size: 0.82rem;
-            color: var(--accent-amber);
-            background: rgba(251, 191, 36, 0.1);
-            padding: 10px 12px;
-            border-radius: 10px;
-            border-left: 3px solid var(--accent-amber);
-        }
-
-        /* Guía, Equipaje y Calculadora */
-        .source-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .source-card h3 {
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: var(--accent-cyan);
-        }
-
-        .source-card a {
-            color: var(--accent-cyan);
-            font-size: 0.85rem;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .packing-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .packing-category {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 18px;
-        }
-
-        .packing-category h4 {
-            font-size: 0.95rem;
-            color: var(--accent-purple);
-            margin-bottom: 12px;
-        }
-
-        .packing-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 0.82rem;
-            color: var(--text-main);
-            cursor: pointer;
-        }
-
-        .packing-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--accent-cyan);
-            cursor: pointer;
-        }
-
-        .comparison-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-        }
-
-        .store-card {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .store-price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
-            margin: 10px 0;
-        }
-
-        .store-btn {
-            display: inline-block;
-            text-align: center;
-            background: var(--accent-cyan);
-            color: #ffffff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 6px;
-        }
-
-        /* CALCULADORA DE DEUDAS */
-        .debt-calculator {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .debt-summary {
-            font-size: 0.9rem;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px;
-            border-radius: 12px;
-            margin-top: 12px;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 640px) {
-            .add-form { grid-template-columns: 1fr; }
-            .location-detail-card { grid-template-columns: 1fr; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f6f5f1">
+<title>Ice, Ice, Paradise · Islandia 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script>
+  // Aplica el tema guardado antes de pintar (claro por defecto)
+  try { document.documentElement.setAttribute('data-theme', localStorage.getItem('iceland_theme') || 'light'); } catch (e) {}
+</script>
+<style>
+  :root, :root[data-theme="light"] {
+    --bg: #f6f5f1;
+    --card: #ffffff;
+    --soft: #f0eee8;
+    --line: #e6e3db;
+    --text: #1d1c1a;
+    --muted: #7b786f;
+    --accent: #3f6e7d;
+    --accent-soft: #e6eef0;
+    --green: #5d8a6a;
+    --green-soft: #e8f0ea;
+    --amber: #a8742a;
+    --amber-soft: #f5ecdc;
+    --red: #b4553c;
+    --red-soft: #f6e6e0;
+    --shadow: 0 1px 2px rgba(30, 28, 24, .04), 0 4px 16px rgba(30, 28, 24, .04);
+  }
+  :root[data-theme="dark"] {
+    --bg: #131517;
+    --card: #1a1d20;
+    --soft: #212528;
+    --line: #2b3034;
+    --text: #ecebe6;
+    --muted: #8d9195;
+    --accent: #8dbccb;
+    --accent-soft: #1f2c31;
+    --green: #8fbf9b;
+    --green-soft: #1e2b23;
+    --amber: #d7aa62;
+    --amber-soft: #2d2619;
+    --red: #e08b74;
+    --red-soft: #31211d;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 28px 20px 64px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  input, select, textarea { font: inherit; color: var(--text); }
+
+  /* Cabecera */
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+  .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.05; }
+  .subtitle { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--card); border: 1px solid var(--line);
+    display: grid; place-items: center; font-size: 16px; flex-shrink: 0;
+  }
+
+  /* Cuenta regresiva */
+  .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 28px; }
+  .cd-cell { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 8px; text-align: center; box-shadow: var(--shadow); }
+  .cd-num { font-family: 'Fraunces', serif; font-size: clamp(24px, 6vw, 34px); line-height: 1; font-variant-numeric: tabular-nums; }
+  .cd-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-top: 6px; }
+
+  /* Pestañas */
+  .tabs {
+    display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+    border-bottom: 1px solid var(--line); margin-bottom: 24px;
+    position: sticky; top: 0; background: var(--bg); z-index: 500; padding-top: 4px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button {
+    background: none; border: none; padding: 10px 12px; white-space: nowrap;
+    font-size: 14px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tabs button.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
+  .tab { display: none; animation: fade .25s ease; }
+  .tab.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* Tarjetas */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .card h2 { font-size: 20px; margin-bottom: 4px; }
+  .card h3 { font-size: 17px; margin-bottom: 4px; }
+  .hint { font-size: 13px; color: var(--muted); }
+  .section-title { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+  /* Widgets en vivo */
+  .widget { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; }
+  .widget-top { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .06em; }
+  .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+  .live.on::before { background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  .widget-val { font-family: 'Fraunces', serif; font-size: 30px; line-height: 1.1; }
+  .widget-desc { font-size: 13px; color: var(--muted); min-height: 40px; }
+  .widget a { font-size: 12px; margin-top: auto; }
+  .kp-bar { height: 4px; border-radius: 4px; background: var(--soft); overflow: hidden; }
+  .kp-bar span { display: block; height: 100%; width: 0; background: var(--green); transition: width .6s ease; }
+
+  /* Curiosidad */
+  .curiosity { background: var(--accent-soft); border: none; border-radius: 18px; padding: 18px 20px; margin: 16px 0; text-align: left; width: 100%; display: block; }
+  .curiosity .eyebrow { color: var(--accent); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .curiosity p { font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.4; }
+
+  /* Resumen */
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .stat-val { font-family: 'Fraunces', serif; font-size: 34px; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .stat-sub { font-size: 13px; color: var(--muted); }
+  .person { background: var(--soft); border-radius: 12px; padding: 12px; text-align: center; }
+  .person-name { font-size: 12px; color: var(--muted); }
+  .person-val { font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+  /* Lista de gastos */
+  .row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: none; }
+  .row-main { flex: 1; min-width: 0; }
+  .row-title { font-weight: 500; overflow-wrap: anywhere; }
+  .row-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .row.cancelled .row-title, .row.cancelled .price-input { text-decoration: line-through; opacity: .5; }
+  .pill { border: none; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 500; }
+  .pill-Pendiente { background: var(--amber-soft); color: var(--amber); }
+  .pill-Confirmado { background: var(--green-soft); color: var(--green); }
+  .pill-Espera { background: var(--accent-soft); color: var(--accent); }
+  .pill-Cancelado { background: var(--red-soft); color: var(--red); }
+  .price-input {
+    width: 96px; text-align: right; border: 1px solid transparent; background: transparent;
+    border-radius: 8px; padding: 6px 8px; font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+  .price-input:hover, .price-input:focus { border-color: var(--line); background: var(--soft); outline: none; }
+  .x-btn { background: none; border: none; color: var(--muted); width: 28px; height: 28px; border-radius: 50%; font-size: 14px; }
+  .x-btn:hover { background: var(--red-soft); color: var(--red); }
+
+  /* Formularios */
+  .form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-top: 14px; }
+  .form.debt { grid-template-columns: 1fr 2fr 1fr auto; }
+  .field { background: var(--soft); border: 1px solid transparent; border-radius: 10px; padding: 10px 12px; width: 100%; }
+  .field:focus { outline: none; border-color: var(--accent); background: var(--card); }
+  .btn { background: var(--text); color: var(--bg); border: none; border-radius: 10px; padding: 10px 16px; font-weight: 500; white-space: nowrap; }
+  .btn:hover { opacity: .88; }
+  .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; font-size: 13px; }
+  .btn-ghost:hover { background: var(--soft); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Itinerario */
+  .day { display: grid; grid-template-columns: 64px 1fr; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .day:last-child { border-bottom: none; padding-bottom: 0; }
+  .day:first-child { padding-top: 0; }
+  .day-date { text-align: center; }
+  .day-num { font-family: 'Fraunces', serif; font-size: 30px; line-height: 1; }
+  .day-wd { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+  .day h3 { font-size: 18px; }
+  .day ul { list-style: none; margin-top: 8px; display: grid; gap: 4px; }
+  .day li { font-size: 14px; padding-left: 16px; position: relative; }
+  .day li::before { content: ''; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .day-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { background: var(--soft); color: var(--muted); border-radius: 999px; padding: 3px 10px; font-size: 12px; }
+  .note { background: var(--amber-soft); color: var(--text); border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-top: 12px; }
+  .note strong { color: var(--amber); }
+
+  /* Mapa */
+  #map { height: 380px; border-radius: 14px; margin-top: 12px; z-index: 1; background: var(--soft); }
+  .leaflet-container { font-family: 'Inter', sans-serif; }
+  .pin { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 600; display: grid; place-items: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .place { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; padding: 0; overflow: hidden; }
+  .place-img { position: relative; background: linear-gradient(135deg, var(--accent-soft), var(--soft)); min-height: 240px; }
+  .place-img img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; opacity: 0; transition: opacity .4s; }
+  .place-img img.loaded { opacity: 1; }
+  .place-credit { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,.45); color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 999px; }
+  .place-credit a { color: #fff; }
+  .place-body { padding: 22px; }
+  .place-body h3 { font-size: 22px; }
+  .place-body p { font-size: 14px; color: var(--muted); margin-top: 8px; }
+  .fact { background: var(--soft); border-radius: 12px; padding: 12px; font-size: 13px; margin-top: 14px; }
+
+  /* Equipaje */
+  .pack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .pack-cat h3 { font-size: 16px; margin-bottom: 10px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: 14px; cursor: pointer; }
+  .check input { width: 17px; height: 17px; accent-color: var(--accent); margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+  .check small { display: block; color: var(--muted); font-size: 12px; }
+  .store { background: var(--soft); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .store.best { outline: 2px solid var(--green); outline-offset: -2px; }
+  .store-name { font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+  .store-price { font-family: 'Fraunces', serif; font-size: 28px; font-variant-numeric: tabular-nums; }
+  .badge { font-size: 10px; background: var(--green-soft); color: var(--green); border-radius: 999px; padding: 2px 8px; font-weight: 500; }
+
+  /* Enlaces */
+  .links { display: grid; gap: 0; }
+  .link-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--text); }
+  .link-row:last-child { border-bottom: none; }
+  .link-row:hover { text-decoration: none; }
+  .link-row:hover .link-arrow { transform: translateX(3px); }
+  .link-row small { display: block; color: var(--muted); font-size: 12px; }
+  .link-arrow { color: var(--muted); transition: transform .2s; }
+
+  /* Deudas */
+  .transfer { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--soft); border-radius: 12px; margin-top: 8px; }
+  .transfer strong { font-weight: 600; }
+  .transfer .amount { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ok { background: var(--green-soft); color: var(--green); border-radius: 12px; padding: 12px 14px; margin-top: 8px; font-size: 14px; }
+  .balance-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+
+  /* Diálogo y aviso */
+  dialog { border: 1px solid var(--line); border-radius: 18px; padding: 22px; background: var(--card); color: var(--text); width: min(480px, calc(100% - 32px)); margin: auto; }
+  dialog::backdrop { background: rgba(20, 20, 18, .35); }
+  dialog textarea { width: 100%; min-height: 110px; margin: 12px 0; resize: vertical; font-size: 12px; font-family: ui-monospace, monospace; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none; transition: all .25s; z-index: 1000; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 32px; }
+
+  @media (max-width: 640px) {
+    body { padding: 20px 14px 48px; font-size: 14.5px; }
+    .grid-2, .pack-grid, .place { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .form, .form.debt { grid-template-columns: 1fr 1fr; }
+    .form .wide { grid-column: 1 / -1; }
+    .form .btn { grid-column: 1 / -1; }
+    .day { grid-template-columns: 48px 1fr; gap: 12px; }
+    #map { height: 320px; }
+    .stat-val { font-size: 28px; }
+  }
+</style>
 </head>
 <body>
+<div class="wrap">
 
-    <div class="app-container">
-        <!-- Header -->
-        <header>
-            <div class="title-group">
-                <h1>🇮🇸 Ice, Ice, Paradise</h1>
-                <p>Islandia 2027 · Del 17 al 21 de Febrero (5 Días / 4 Noches)</p>
-            </div>
-            <div class="header-actions">
-                <button class="btn-icon" onclick="toggleTheme()">
-                    <span id="theme-icon">🌙</span>
-                </button>
-            </div>
-        </header>
+  <header>
+    <div>
+      <div class="eyebrow">Islandia · 17—21 febrero 2027</div>
+      <h1>Ice, Ice, Paradise</h1>
+      <p class="subtitle">Ximena, Fiorella, Raquel y Diego · 5 días / 4 noches</p>
+    </div>
+    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">☾</button>
+  </header>
 
-        <!-- CUENTA REGRESIVA EN VIVO -->
-        <div class="countdown-banner">
-            <span class="countdown-title">⏳ Cuenta Regresiva para Islandia</span>
-            <div class="countdown-timers" id="countdown">
-                <div><span id="days">00</span> días</div>
-                <div><span id="hours">00</span> hrs</div>
-                <div><span id="mins">00</span> min</div>
-                <div><span id="secs">00</span> seg</div>
-            </div>
-        </div>
+  <div class="countdown" aria-label="Cuenta regresiva">
+    <div class="cd-cell"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">días</div></div>
+    <div class="cd-cell"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">horas</div></div>
+    <div class="cd-cell"><div class="cd-num" id="cd-mins">00</div><div class="cd-lbl">min</div></div>
+    <div class="cd-cell"><div class="cd-num" id="cd-secs">00</div><div class="cd-lbl">seg</div></div>
+  </div>
 
-        <!-- Pestañas (Calculadora al final) -->
-        <div class="nav-tabs">
-            <button class="active" onclick="switchTab('presupuesto', event)">💰 Presupuesto</button>
-            <button onclick="switchTab('mapa', event)">🗺️ Mapa Ruta</button>
-            <button onclick="switchTab('guia', event)">🎒 Guía & Equipaje</button>
-            <button onclick="switchTab('fuentes', event)">🔗 Fuentes & Súper</button>
-            <button onclick="switchTab('calculadora', event)">🧮 Calculadora Deudas</button>
-        </div>
+  <nav class="tabs" role="tablist">
+    <button class="active" data-tab="presupuesto">Presupuesto</button>
+    <button data-tab="itinerario">Itinerario</button>
+    <button data-tab="mapa">Mapa</button>
+    <button data-tab="equipaje">Equipaje</button>
+    <button data-tab="enlaces">Enlaces</button>
+    <button data-tab="cuentas">Cuentas</button>
+  </nav>
 
-        <!-- PESTAÑA 1: PRESUPUESTO & WIDGETS EN TIEMPO REAL -->
-        <div id="presupuesto" class="tab-content active">
-            <!-- Widgets de Móvil Animados -->
-            <div class="mobile-widgets-grid">
-                <div class="mobile-widget">
-                    <div class="widget-header">
-                        <span>☁️ Reikiavik Clima En Vivo</span>
-                        <span class="live-dot"></span>
-                    </div>
-                    <div class="widget-body">
-                        <div class="widget-main-val" id="widget-temp">-1°C / Ventoso</div>
-                        <div class="widget-desc" id="widget-weather-desc">Nubes dispersas y sensación térmica invernal.</div>
-                    </div>
-                    <a href="https://en.vedur.is/" target="_blank" class="widget-link">Ver Vedur.is ↗</a>
-                </div>
-                <div class="mobile-widget">
-                    <div class="widget-header">
-                        <span>✨ Índice Auroras Boreales</span>
-                        <span class="live-dot" style="background-color: var(--accent-purple);"></span>
-                    </div>
-                    <div class="widget-body">
-                        <div class="widget-main-val" id="widget-aurora">Kp 4 (Alto)</div>
-                        <div class="widget-desc">Cielos oscuros óptimos para avistamiento nocturno en febrero.</div>
-                    </div>
-                    <a href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" class="widget-link" style="color: var(--accent-cyan);">Ver Aurora Forecast ↗</a>
-                </div>
-            </div>
-
-            <div class="curiosity-banner" onclick="loadRandomCuriosity()">
-                <div class="curiosity-title" id="curiosity-category">
-                    <span>🏛️ CURIOSIDAD POLÍTICA E HISTÓRICA</span>
-                    <small>🔄 Haz clic para ver otra</small>
-                </div>
-                <span class="curiosity-text" id="curiosity-text">Cargando datos de Islandia...</span>
-            </div>
-
-            <section class="control-panel">
-                <div class="sync-info">
-                    <span>Motores de Búsqueda Activos: <strong>Vuelos, Hospedaje, Vehículo & Súper</strong></span>
-                    <span id="last-sync-time">Última actualización automática: Justo ahora</span>
-                </div>
-                <button class="btn-refresh" onclick="simulatePriceUpdate()">
-                    🔄 Consultar Precios Ahora
-                </button>
-            </section>
-
-            <section class="summary-grid">
-                <div class="summary-card">
-                    <label>Presupuesto Total Estimado</label>
-                    <div class="amount" id="total-budget">0 €</div>
-                    <div class="per-person" id="per-person-budget">0 € / persona</div>
-                </div>
-                <div class="summary-card">
-                    <label>Gastos Confirmados</label>
-                    <div class="amount" style="color: var(--accent-emerald)" id="total-confirmed">0 €</div>
-                    <div class="per-person" style="color: var(--text-muted);" id="confirmed-count">0 ítems confirmados</div>
-                </div>
-            </section>
-
-            <section class="travelers-card">
-                <h2>👥 Presupuesto por Persona (Ximena, Fiorella, Raquel, Diego)</h2>
-                <div class="travelers-grid">
-                    <div class="traveler-badge">
-                        <div class="traveler-name">Ximena</div>
-                        <div class="traveler-cost" id="cost-ximena">0 €</div>
-                    </div>
-                    <div class="traveler-badge">
-                        <div class="traveler-name">Fiorella</div>
-                        <div class="traveler-cost" id="cost-fiorella">0 €</div>
-                    </div>
-                    <div class="traveler-badge">
-                        <div class="traveler-name">Raquel</div>
-                        <div class="traveler-cost" id="cost-raquel">0 €</div>
-                    </div>
-                    <div class="traveler-badge">
-                        <div class="traveler-name">Diego</div>
-                        <div class="traveler-cost" id="cost-diego">0 €</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="items-section">
-                <div class="items-header">
-                    <h2>📋 Cotizaciones en Tiempo Real (Incluyendo Gasolina y Súper Bónus)</h2>
-                </div>
-
-                <div id="items-list"></div>
-
-                <form class="add-form" onsubmit="addItem(event)">
-                    <input type="text" id="new-item-title" placeholder="Ej. Gasolina / Súper Bónus" required>
-                    <input type="number" id="new-item-price" placeholder="Precio Total (€)" step="0.01" required>
-                    <select id="new-item-status">
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="Confirmado">Confirmado</option>
-                        <option value="Espera">En espera</option>
-                    </select>
-                    <button type="submit" class="btn-add">Añadir</button>
-                </form>
-            </section>
-        </div>
-
-        <!-- PESTAÑA 2: MAPA INTERACTIVO -->
-        <div id="mapa" class="tab-content">
-            <div class="source-card">
-                <h3>🗺️ Mapa de la Ruta (Haz clic en un punto para explorar en HD)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Haz clic en cualquiera de los marcadores del mapa para ver la foto real y específica del lugar abajo.</p>
-                <div id="map"></div>
-            </div>
-
-            <div class="location-detail-card" id="location-inspector">
-                <div class="location-img-wrapper">
-                    <img id="loc-img" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop" alt="Reykjavik">
-                </div>
-                <div class="location-content">
-                    <h4 id="loc-title">Reikiavik (Base Principal)</h4>
-                    <p id="loc-desc">Capital de Islandia y base de operaciones del viaje. Una ciudad moderna, limpia y acogedora repleta de cafeterías con encanto, arquitectura vanguardista y la imponente iglesia Hallgrímskirkja.</p>
-                    <div class="location-curiosity" id="loc-curiosity">
-                        <strong>💡 Dato de interés:</strong> Es la capital soberana situada más al norte del planeta y el 100% de su calefacción urbana proviene de agua geotérmica subterránea.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 3: GUÍA & EQUIPAJE -->
-        <div id="guia" class="tab-content">
-            <div class="source-card" style="margin-bottom: 20px;">
-                <h3>🎒 Lista de Equipaje Ártico (Febrero 2027)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Selecciona las prendas y accesorios que necesitas adquirir para ver el comparativo de presupuesto entre tiendas.</p>
-            </div>
-
-            <div class="packing-list">
-                <div class="packing-category">
-                    <h4>🧥 Capas Base e Intermedias</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Camiseta Térmica Lana Merino (x2)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="19.99" data-lefties="12.99" data-mountain="35.00" onchange="calculateCart()"> Mallas Térmicas Inferiores (x2)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="24.99" data-lefties="15.99" data-mountain="45.00" onchange="calculateCart()"> Forro Polar Grueso (Fleece)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="39.99" data-lefties="22.99" data-mountain="75.00" onchange="calculateCart()"> Segunda Capa Polar o Chaleco Acolchado</label>
-                </div>
-                <div class="packing-category">
-                    <h4>🧥 Capas Exteriores e Impermeables</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="69.99" data-lefties="39.99" data-mountain="120.00" onchange="calculateCart()"> Chaqueta Cortavientos e Impermeable (Gore-Tex)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="49.99" data-lefties="29.99" data-mountain="85.00" onchange="calculateCart()"> Pantalones de Montaña Trekking Impermeables</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Cubrepantalón Impermeable de Lluvia</label>
-                </div>
-                <div class="packing-category">
-                    <h4>🥾 Calzado y Nieve</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="49.99" data-lefties="29.99" data-mountain="95.00" onchange="calculateCart()"> Botas de Montaña Altas e Impermeables</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Crampones Ligeros Antideslizantes (Icers)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="9.99" data-lefties="5.99" data-mountain="18.00" onchange="calculateCart()"> Calcetines Térmicos Altos Lana Merino (x3)</label>
-                </div>
-                <div class="packing-category">
-                    <h4>🧤 Accesorios & Supervivencia Ártica</h4>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="12.99" data-lefties="7.99" data-mountain="22.00" onchange="calculateCart()"> Guantes Térmicos Táctiles Cortavientos</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="16.99" data-lefties="10.99" data-mountain="30.00" onchange="calculateCart()"> Manoplas de Pluma o Abrigadas (Extra frío)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="7.99" data-lefties="4.99" data-mountain="12.00" onchange="calculateCart()"> Gorro de Lana Abrigado y Braga de Cuello</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="14.99" data-lefties="8.99" data-mountain="24.00" onchange="calculateCart()"> Pasamontañas / Cagoule Cortavientos</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="15.99" data-lefties="9.99" data-mountain="25.00" onchange="calculateCart()"> Power Bank 10,000mAh (Resistente al Frío)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="9.99" data-lefties="6.99" data-mountain="18.00" onchange="calculateCart()"> Termo Metálico para Bebida Caliente (0.7L)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="12.99" data-lefties="7.99" data-mountain="22.00" onchange="calculateCart()"> Linterna Frontal LED (Búsqueda de Auroras)</label>
-                    <label class="packing-item"><input type="checkbox" data-decathlon="8.99" data-lefties="5.99" data-mountain="15.00" onchange="calculateCart()"> Crema Solar Facial y Protector Labial</label>
-                </div>
-            </div>
-
-            <div class="comparison-section">
-                <h3>🛒 Cesta de Compra - Comparativa de Precios por Tienda</h3>
-                <div class="comparison-grid">
-                    <div class="store-card">
-                        <div>
-                            <h5>Decathlon 🟦</h5>
-                            <p style="font-size:0.78rem; color:var(--text-muted);">Calidad técnica estándar para invierno.</p>
-                        </div>
-                        <div class="store-price" id="total-decathlon">0.00 €</div>
-                        <a href="https://www.decathlon.es" target="_blank" class="store-btn">Ir a Decathlon</a>
-                    </div>
-                    <div class="store-card">
-                        <div>
-                            <h5>Lefties 🟥</h5>
-                            <p style="font-size:0.78rem; color:var(--text-muted);">Opción económica y casual.</p>
-                        </div>
-                        <div class="store-price" id="total-lefties">0.00 €</div>
-                        <a href="https://www.lefties.com" target="_blank" class="store-btn">Ir a Lefties</a>
-                    </div>
-                    <div class="store-card">
-                        <div>
-                            <h5>Tienda Técnica ⛰️</h5>
-                            <p style="font-size:0.78rem; color:var(--text-muted);">Gore-Tex y alta montaña profesional.</p>
-                        </div>
-                        <div class="store-price" id="total-mountain">0.00 €</div>
-                        <a href="https://www.barrabes.com" target="_blank" class="store-btn" style="background: var(--accent-purple);">Ir a Tienda Técnica</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 4: FUENTES & SÚPER -->
-        <div id="fuentes" class="tab-content">
-            <div class="source-card">
-                <h3>🛒 Supermercados Económicos en Islandia (Bónus & Krónan)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Recomendación: Compra aquí el desayuno, snacks y sándwiches. El logo de Bónus es un cerdito rosa muy fácil de reconocer.</p>
-                <a href="https://www.bonus.is" target="_blank">🔗 Visitar web oficial de Supermercados Bónus</a>
-            </div>
-            <div class="source-card">
-                <h3>✈️ Vuelos (Barcelona BCN - Reikiavik KEF)</h3>
-                <a href="https://www.google.com/travel/flights" target="_blank">🔗 Ver en Google Flights</a>
-            </div>
-            <div class="source-card">
-                <h3>🏡 Alojamiento & Vehículo 4x4</h3>
-                <a href="https://www.booking.com" target="_blank">🔗 Booking.com</a> &nbsp;|&nbsp; <a href="https://www.bluelacarrental.is" target="_blank">🔗 Blue Car Rental</a>
-            </div>
-        </div>
-
-        <!-- PESTAÑA 5: CALCULADORA DE DEUDAS (AL FINAL) -->
-        <div id="calculadora" class="tab-content">
-            <div class="source-card">
-                <h3>🧮 ¿Quién ha pagado qué? (Calculadora de Saldos Internos)</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Registra los pagos adelantados por cada integrante para calcular automáticamente quién debe compensar a quién.</p>
-                
-                <form class="add-form" onsubmit="addExpense(event)">
-                    <select id="payer-name">
-                        <option value="Diego">Diego</option>
-                        <option value="Ximena">Ximena</option>
-                        <option value="Fiorella">Fiorella</option>
-                        <option value="Raquel">Raquel</option>
-                    </select>
-                    <input type="text" id="expense-desc" placeholder="Concepto (Ej. Gasolina N1)" required>
-                    <input type="number" id="expense-amount" placeholder="Importe (€)" step="0.01" required>
-                    <button type="submit" class="btn-add">Añadir Pago</button>
-                </form>
-            </div>
-
-            <div class="debt-calculator">
-                <h4>📊 Resumen de Gastos Pagados por Integrante</h4>
-                <div id="expenses-paid-list" style="margin-top: 10px; font-size: 0.85rem; margin-bottom: 16px;"></div>
-                <h4 style="color: var(--accent-emerald);">💡 Balance y Compensación (Equilibrio a 4 partes iguales)</h4>
-                <div class="debt-summary" id="debt-result">Calculando saldos...</div>
-            </div>
-        </div>
+  <!-- ============ PRESUPUESTO ============ -->
+  <section id="presupuesto" class="tab active">
+    <div class="grid-2">
+      <div class="widget">
+        <div class="widget-top"><span>Reikiavik ahora</span><span class="live" id="weather-live">cargando</span></div>
+        <div class="widget-val" id="w-temp">—</div>
+        <div class="widget-desc" id="w-desc">Consultando Open-Meteo…</div>
+        <a href="https://en.vedur.is/" target="_blank" rel="noopener">Previsión oficial en vedur.is ↗</a>
+      </div>
+      <div class="widget">
+        <div class="widget-top"><span>Auroras · índice Kp</span><span class="live" id="kp-live">cargando</span></div>
+        <div class="widget-val" id="kp-val">—</div>
+        <div class="kp-bar"><span id="kp-bar"></span></div>
+        <div class="widget-desc" id="kp-desc">Consultando NOAA…</div>
+        <a href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" rel="noopener">Mapa de nubes y auroras ↗</a>
+      </div>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // Cuenta Regresiva al 17 de Febrero de 2027
-        const targetDate = new Date("February 17, 2027 00:00:00").getTime();
-        setInterval(() => {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-            if(distance > 0) {
-                document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
-                document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                document.getElementById("mins").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                document.getElementById("secs").innerText = Math.floor((distance % (1000 * 60)) / 1000);
-            }
-        }, 1000);
+    <button class="curiosity" onclick="nextCuriosity()">
+      <div class="eyebrow"><span id="cur-cat">Curiosidad</span><span>Otra →</span></div>
+      <p id="cur-text"></p>
+    </button>
 
-        const islandCuriosities = [
-            { cat: "📜 CURIOSIDAD HISTÓRICA", text: "El Althingi, fundado en el año 930 d.C. en Þingvellir, es considerado el parlamento democrático activo más antiguo del mundo." },
-            { cat: "🏛️ CURIOSIDAD POLÍTICA", text: "Islandia no cuenta con un ejército permanente; su defensa está respaldada por la OTAN, con una guardia costera especializada." },
-            { cat: "🌋 CURIOSIDAD GEOGRÁFICA", text: "Islandia se encuentra sobre la Dorsal Mesoatlántica; América y Eurasia se separan a unos 2 cm por año." },
-            { cat: "👥 CURIOSIDAD SOCIAL", text: "En Islandia no se usan apellidos tradicionales; los hijos llevan el nombre de su padre o madre seguido de '-son' o '-dóttir'." }
-        ];
+    <div class="grid-2">
+      <div class="card" style="margin-bottom:0">
+        <div class="stat-label">Presupuesto total</div>
+        <div class="stat-val" id="total-budget">0 €</div>
+        <div class="stat-sub" id="per-person">0 € por persona</div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="stat-label">Ya confirmado</div>
+        <div class="stat-val" style="color:var(--green)" id="total-confirmed">0 €</div>
+        <div class="stat-sub" id="confirmed-count">0 de 0 partidas</div>
+      </div>
+    </div>
 
-        let items = JSON.parse(localStorage.getItem('iceland_2027_items_v10')) || [
-            { id: 1, title: "Vuelos ida/vuelta BCN - KEF (4 pers)", price: 920, status: "Pendiente" },
-            { id: 2, title: "Cabaña con Jacuzzi / Aurora (4 noches)", price: 680, status: "Pendiente" },
-            { id: 3, title: "Alquiler 4x4 SUV Duster + Seguro", price: 340, status: "Pendiente" },
-            { id: 4, title: "Entradas Blue Lagoon / Sky Lagoon", price: 320, status: "Pendiente" },
-            { id: 5, title: "Gasolina estimada (Ruta 5 días)", price: 120, status: "Pendiente" },
-            { id: 6, title: "Compra Supermercado Bónus (4 pers)", price: 180, status: "Pendiente" }
-        ];
+    <div class="card" style="margin-top:16px">
+      <div class="section-title"><h2>Por persona</h2><span class="hint">Reparto a partes iguales</span></div>
+      <div class="grid-4" id="people-grid"></div>
+    </div>
 
-        let expensesPaid = JSON.parse(localStorage.getItem('iceland_2027_expenses_v10')) || [
-            { id: 1, payer: "Diego", desc: "Reserva inicial cabaña", amount: 200 }
-        ];
+    <div class="card">
+      <div class="section-title">
+        <h2>Partidas del viaje</h2>
+        <span class="hint">Toca el precio para editarlo · toca el estado para cambiarlo</span>
+      </div>
+      <div id="items-list"></div>
+      <form class="form" onsubmit="addItem(event)">
+        <input class="field wide" id="new-title" placeholder="Concepto (ej. Parking Reikiavik)" required>
+        <input class="field" id="new-price" type="number" step="0.01" min="0" placeholder="Total €" required>
+        <select class="field" id="new-status">
+          <option>Pendiente</option><option>Confirmado</option><option value="Espera">En espera</option>
+        </select>
+        <button class="btn" type="submit">Añadir</button>
+      </form>
+      <p class="hint" style="margin-top:12px">Las partidas canceladas no suman al total. Los precios son estimaciones: actualízalos cuando reservéis.</p>
+    </div>
+  </section>
 
-        function switchTab(tabId, e) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            e.target.classList.add('active');
+  <!-- ============ ITINERARIO ============ -->
+  <section id="itinerario" class="tab">
+    <div class="card">
+      <div class="section-title"><h2>Ruta día a día</h2><span class="hint">Propuesta · ~9 h de luz en febrero</span></div>
+      <div id="days-list"></div>
+      <div class="note"><strong>Antes de cada salida:</strong> mirad <a href="https://umferdin.is/en" target="_blank" rel="noopener">umferdin.is</a> (estado de carreteras) y <a href="https://safetravel.is/" target="_blank" rel="noopener">safetravel.is</a> (alertas). En invierno cierran tramos por viento o nieve sin mucho aviso.</div>
+    </div>
+  </section>
 
-            if(tabId === 'mapa') {
-                setTimeout(() => { map.invalidateSize(); }, 200);
-            }
-        }
+  <!-- ============ MAPA ============ -->
+  <section id="mapa" class="tab">
+    <div class="card">
+      <h2>Mapa de la ruta</h2>
+      <p class="hint">Toca un punto para ver la foto y la información.</p>
+      <div id="map"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card place">
+      <div class="place-img">
+        <img id="place-img" alt="">
+        <span class="place-credit" id="place-credit" hidden></span>
+      </div>
+      <div class="place-body">
+        <div class="eyebrow" id="place-day"></div>
+        <h3 id="place-name"></h3>
+        <p id="place-desc"></p>
+        <div class="fact" id="place-fact"></div>
+      </div>
+    </div>
+  </section>
 
-        function calculateCart() {
-            let decathlonTotal = 0;
-            let leftiesTotal = 0;
-            let mountainTotal = 0;
+  <!-- ============ EQUIPAJE ============ -->
+  <section id="equipaje" class="tab">
+    <div class="card">
+      <h2>Equipaje ártico</h2>
+      <p class="hint">Marca lo que te falta y compara cuánto cuesta en cada tienda. Precios orientativos por persona, no consultados en directo.</p>
+    </div>
+    <div class="pack-grid" id="pack-grid"></div>
 
-            document.querySelectorAll('.packing-item input[type="checkbox"]:checked').forEach(cb => {
-                decathlonTotal += parseFloat(cb.getAttribute('data-decathlon') || 0);
-                leftiesTotal += parseFloat(cb.getAttribute('data-lefties') || 0);
-                mountainTotal += parseFloat(cb.getAttribute('data-mountain') || 0);
-            });
+    <div class="card" style="margin-top:16px">
+      <div class="section-title"><h2>Tu cesta</h2><button class="btn-ghost" onclick="clearPacking()">Vaciar</button></div>
+      <div class="grid-2" id="stores" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));"></div>
+      <div class="note"><strong>Ojo con Lefties:</strong> sirve para capas básicas, gorros o calcetines, pero no vende Gore-Tex ni botas técnicas. Para la chaqueta, el pantalón impermeable y las botas, compara solo Decathlon y la tienda técnica.</div>
+    </div>
+  </section>
 
-            document.getElementById('total-decathlon').innerText = `${decathlonTotal.toFixed(2)} €`;
-            document.getElementById('total-lefties').innerText = `${leftiesTotal.toFixed(2)} €`;
-            document.getElementById('total-mountain').innerText = `${mountainTotal.toFixed(2)} €`;
-        }
+  <!-- ============ ENLACES ============ -->
+  <section id="enlaces" class="tab">
+    <div class="card">
+      <h2>Seguridad y carreteras</h2>
+      <div class="links">
+        <a class="link-row" href="https://umferdin.is/en" target="_blank" rel="noopener"><span>Umferdin.is<small>Estado de carreteras en tiempo real</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://safetravel.is/" target="_blank" rel="noopener"><span>SafeTravel.is<small>Alertas oficiales y registro del plan de viaje</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://en.vedur.is/" target="_blank" rel="noopener"><span>Vedur.is<small>Meteorología y previsión de auroras</small></span><span class="link-arrow">→</span></a>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Supermercados</h2>
+      <p class="hint">Desayunos, snacks y bocadillos. Bónus es el del cerdito rosa.</p>
+      <div class="links">
+        <a class="link-row" href="https://www.bonus.is" target="_blank" rel="noopener"><span>Bónus<small>El más barato, horarios más cortos</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://kronan.is" target="_blank" rel="noopener"><span>Krónan<small>Precios similares, más surtido</small></span><span class="link-arrow">→</span></a>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Reservas</h2>
+      <div class="links">
+        <a class="link-row" href="https://www.google.com/travel/flights" target="_blank" rel="noopener"><span>Vuelos BCN — KEF<small>Google Flights</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://www.booking.com" target="_blank" rel="noopener"><span>Alojamiento<small>Booking.com</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://www.bluecarrental.is" target="_blank" rel="noopener"><span>Coche 4x4<small>Blue Car Rental</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://www.bluelagoon.com" target="_blank" rel="noopener"><span>Blue Lagoon<small>Reserva con antelación: hay cupos por hora</small></span><span class="link-arrow">→</span></a>
+        <a class="link-row" href="https://www.skylagoon.com" target="_blank" rel="noopener"><span>Sky Lagoon<small>Más cerca de Reikiavik</small></span><span class="link-arrow">→</span></a>
+      </div>
+    </div>
+  </section>
 
-        function addExpense(e) {
-            e.preventDefault();
-            const payer = document.getElementById('payer-name').value;
-            const desc = document.getElementById('expense-desc').value;
-            const amount = parseFloat(document.getElementById('expense-amount').value);
+  <!-- ============ CUENTAS ============ -->
+  <section id="cuentas" class="tab">
+    <div class="card">
+      <div class="section-title"><h2>¿Quién ha pagado qué?</h2></div>
+      <p class="hint">Apunta cada pago adelantado. Todo se reparte a partes iguales entre los 4.</p>
+      <form class="form debt" onsubmit="addExpense(event)">
+        <select class="field" id="payer"></select>
+        <input class="field wide" id="exp-desc" placeholder="Concepto (ej. Gasolina día 2)" required>
+        <input class="field" id="exp-amount" type="number" step="0.01" min="0" placeholder="Importe €" required>
+        <button class="btn" type="submit">Añadir pago</button>
+      </form>
+      <div id="expenses-list" style="margin-top:12px"></div>
+    </div>
 
-            expensesPaid.push({ id: Date.now(), payer, desc, amount });
-            renderExpenses();
+    <div class="card">
+      <h2>Balance</h2>
+      <p class="hint" id="debt-total"></p>
+      <div id="balances" style="margin-top:10px"></div>
+      <h3 style="margin-top:18px">Transferencias para cuadrar</h3>
+      <div id="transfers"></div>
+    </div>
 
-            document.getElementById('expense-desc').value = '';
-            document.getElementById('expense-amount').value = '';
-        }
+    <div class="card">
+      <h2>Compartir con el grupo</h2>
+      <p class="hint">Cada móvil guarda sus propios datos. Para que todos veáis lo mismo, quien tenga la versión más reciente comparte y los demás importan. Lo que importes sustituye a lo que tengas.</p>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn" onclick="shareData()">Compartir datos</button>
+        <button class="btn-ghost" onclick="openImport()">Importar</button>
+      </div>
+    </div>
+  </section>
 
-        function deleteExpense(id) {
-            expensesPaid = expensesPaid.filter(ex => ex.id !== id);
-            renderExpenses();
-        }
+  <footer>Tiempo: Open-Meteo · Auroras: NOAA SWPC · Fotos: Wikimedia Commons · Mapa: © OpenStreetMap, © CARTO</footer>
+</div>
 
-        function renderExpenses() {
-            const listEl = document.getElementById('expenses-paid-list');
-            listEl.innerHTML = '';
+<dialog id="dlg">
+  <h3 id="dlg-title">Importar datos</h3>
+  <p class="hint" id="dlg-hint">Pega aquí el enlace o el código que te han enviado.</p>
+  <textarea class="field" id="dlg-text"></textarea>
+  <div class="btn-row" style="justify-content:flex-end">
+    <button class="btn-ghost" onclick="closeDlg()">Cancelar</button>
+    <button class="btn" id="dlg-ok">Importar</button>
+  </div>
+</dialog>
+<div class="toast" id="toast"></div>
 
-            let totalsByPayer = { Diego: 0, Ximena: 0, Fiorella: 0, Raquel: 0 };
-            let totalSpent = 0;
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ================= Utilidades ================= */
+const PEOPLE = ['Ximena', 'Fiorella', 'Raquel', 'Diego'];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const eur = n => n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const store = {
+  get(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } },
+  set(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+};
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
 
-            expensesPaid.forEach(ex => {
-                totalsByPayer[ex.payer] = (totalsByPayer[ex.payer] || 0) + ex.amount;
-                totalSpent += ex.amount;
+/* ================= Tema ================= */
+function applyThemeIcon() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  $('theme-btn').textContent = dark ? '☀' : '☾';
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#131517' : '#f6f5f1';
+}
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('iceland_theme', next); } catch (e) {}
+  applyThemeIcon();
+  if (window.setMapTiles) setMapTiles();
+}
 
-                listEl.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-color);">
-                        <span><strong>${ex.payer}</strong> pagó "${ex.desc}"</span>
-                        <div>
-                            <span style="font-weight: 700; color: var(--accent-cyan); margin-right: 10px;">${ex.amount.toFixed(2)} €</span>
-                            <button onclick="deleteExpense(${ex.id})" style="background:none; border:none; color:#ef4444; cursor:pointer;">✕</button>
-                        </div>
-                    </div>
-                `;
-            });
+/* ================= Pestañas ================= */
+document.querySelectorAll('.tabs button').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b === btn));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.id === btn.dataset.tab));
+  if (btn.dataset.tab === 'mapa' && window.map) setTimeout(() => map.invalidateSize(), 60);
+}));
 
-            const sharePerPerson = totalSpent / 4;
-            let resultHtml = `Total adelantado por el grupo: <strong>${totalSpent.toFixed(2)} €</strong> (Corresponde a <strong>${sharePerPerson.toFixed(2)} €</strong> por persona).<br><br>`;
+/* ================= Cuenta regresiva ================= */
+const TRIP_START = new Date('2027-02-17T00:00:00+01:00').getTime(); // medianoche hora de Barcelona
+function tick() {
+  const d = Math.max(0, TRIP_START - Date.now());
+  const pad = n => String(n).padStart(2, '0');
+  $('cd-days').textContent = pad(Math.floor(d / 864e5));
+  $('cd-hours').textContent = pad(Math.floor(d % 864e5 / 36e5));
+  $('cd-mins').textContent = pad(Math.floor(d % 36e5 / 6e4));
+  $('cd-secs').textContent = pad(Math.floor(d % 6e4 / 1e3));
+}
+tick(); setInterval(tick, 1000);
 
-            let debtors = [];
-            let creditors = [];
+/* ================= Clima en vivo (Open-Meteo) ================= */
+const WMO = {
+  0: 'Despejado', 1: 'Casi despejado', 2: 'Parcialmente nublado', 3: 'Cubierto',
+  45: 'Niebla', 48: 'Niebla con escarcha', 51: 'Llovizna débil', 53: 'Llovizna', 55: 'Llovizna intensa',
+  56: 'Llovizna helada', 57: 'Llovizna helada intensa', 61: 'Lluvia débil', 63: 'Lluvia', 65: 'Lluvia intensa',
+  66: 'Lluvia helada', 67: 'Lluvia helada intensa', 71: 'Nieve débil', 73: 'Nieve', 75: 'Nieve intensa', 77: 'Granizo fino',
+  80: 'Chubascos débiles', 81: 'Chubascos', 82: 'Chubascos fuertes', 85: 'Chubascos de nieve', 86: 'Chubascos de nieve fuertes',
+  95: 'Tormenta', 96: 'Tormenta con granizo', 99: 'Tormenta con granizo fuerte'
+};
+let cloudCover = null;
+async function loadWeather() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=64.1466&longitude=-21.9426'
+      + '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,cloud_cover'
+      + '&daily=sunrise,sunset&wind_speed_unit=kmh&timezone=Atlantic%2FReykjavik&forecast_days=1';
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    const c = j.current;
+    cloudCover = c.cloud_cover;
+    const hm = s => s ? s.slice(11, 16) : '—';
+    $('w-temp').textContent = `${Math.round(c.temperature_2m)}°C`;
+    $('w-desc').textContent = `${WMO[c.weather_code] || 'Sin dato'} · sensación ${Math.round(c.apparent_temperature)}°C · viento ${Math.round(c.wind_speed_10m)} km/h · luz ${hm(j.daily.sunrise[0])}–${hm(j.daily.sunset[0])}`;
+    $('weather-live').textContent = 'en vivo'; $('weather-live').classList.add('on');
+    updateKpDesc();
+  } catch (e) {
+    $('w-temp').textContent = 'Sin conexión';
+    $('w-desc').textContent = 'No se ha podido cargar el tiempo. Consulta vedur.is.';
+    $('weather-live').textContent = 'sin datos';
+  }
+}
 
-            Object.keys(totalsByPayer).forEach(person => {
-                let diff = totalsByPayer[person] - sharePerPerson;
-                if (diff < -0.01) debtors.push({ name: person, amount: Math.abs(diff) });
-                if (diff > 0.01) creditors.push({ name: person, amount: diff });
-            });
+/* ================= Auroras en vivo (NOAA SWPC) ================= */
+let kpNow = null;
+function parseKp(data) {
+  // Admite tanto el formato antiguo (array de arrays con cabecera) como el nuevo (array de objetos)
+  for (let i = data.length - 1; i >= 0; i--) {
+    const row = data[i];
+    let v = Array.isArray(row) ? row[1] : (row.Kp ?? row.kp ?? row.kp_index ?? row.estimated_kp);
+    v = parseFloat(v);
+    if (!isNaN(v)) return v;
+  }
+  return null;
+}
+async function loadKp() {
+  const sources = [
+    'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json',
+    'https://services.swpc.noaa.gov/json/planetary_k_index_1m.json'
+  ];
+  for (const url of sources) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const v = parseKp(await r.json());
+      if (v !== null) { kpNow = v; break; }
+    } catch (e) {}
+  }
+  if (kpNow === null) {
+    $('kp-val').textContent = 'Sin conexión';
+    $('kp-desc').textContent = 'No se ha podido cargar el índice. Consulta vedur.is.';
+    $('kp-live').textContent = 'sin datos';
+    return;
+  }
+  const level = kpNow >= 5 ? 'Tormenta' : kpNow >= 4 ? 'Alto' : kpNow >= 3 ? 'Moderado' : kpNow >= 2 ? 'Bajo' : 'Muy bajo';
+  $('kp-val').textContent = `Kp ${kpNow.toFixed(1)} · ${level}`;
+  $('kp-bar').style.width = Math.min(100, kpNow / 9 * 100) + '%';
+  $('kp-live').textContent = 'en vivo'; $('kp-live').classList.add('on');
+  updateKpDesc();
+}
+function updateKpDesc() {
+  if (kpNow === null) return;
+  let txt = kpNow >= 3 ? 'Buena actividad: en Islandia se pueden ver con Kp 2-3 si el cielo está despejado.'
+    : kpNow >= 2 ? 'Actividad suficiente en Islandia si no hay nubes.'
+    : 'Actividad baja ahora mismo.';
+  if (cloudCover !== null) txt += ` Nubes en Reikiavik: ${cloudCover}%.`;
+  $('kp-desc').textContent = txt;
+}
 
-            if (debtors.length === 0 && creditors.length === 0) {
-                resultHtml += `✨ ¡Cuentas equilibradas! Nadie le debe nada a nadie por ahora.`;
-            } else {
-                debtors.forEach(debtor => {
-                    creditors.forEach(creditor => {
-                        if (debtor.amount > 0 && creditor.amount > 0) {
-                            let payAmount = Math.min(debtor.amount, creditor.amount);
-                            resultHtml += `➡️ <strong>${debtor.name}</strong> debe pagar <strong>${payAmount.toFixed(2)} €</strong> a <strong>${creditor.name}</strong><br>`;
-                            debtor.amount -= payAmount;
-                            creditor.amount -= payAmount;
-                        }
-                    });
-                });
-            }
+/* ================= Curiosidades ================= */
+const CURIOSITIES = [
+  ['Historia', 'El Althingi, fundado en el año 930 en Þingvellir, está considerado uno de los parlamentos más antiguos del mundo.'],
+  ['Política', 'Islandia no tiene ejército propio. Es miembro fundador de la OTAN y cuenta con una guardia costera.'],
+  ['Geografía', 'La isla está sobre la dorsal mesoatlántica: las placas de América y Eurasia se separan unos 2 cm al año.'],
+  ['Sociedad', 'No hay apellidos familiares: se usa el nombre del padre o la madre más -son (hijo) o -dóttir (hija).'],
+  ['Energía', 'Casi toda la calefacción de las casas islandesas viene de agua geotérmica. Por eso el agua caliente huele a azufre.'],
+  ['Naturaleza', 'En Islandia no hay mosquitos. Es uno de los pocos lugares habitados del mundo sin ellos.'],
+  ['Lengua', 'El islandés ha cambiado tan poco que sus hablantes pueden leer las sagas medievales casi sin ayuda.']
+];
+let curIdx = Math.floor(Math.random() * CURIOSITIES.length);
+function nextCuriosity() {
+  curIdx = (curIdx + 1) % CURIOSITIES.length;
+  $('cur-cat').textContent = 'Curiosidad · ' + CURIOSITIES[curIdx][0];
+  $('cur-text').textContent = CURIOSITIES[curIdx][1];
+}
 
-            document.getElementById('debt-result').innerHTML = resultHtml;
-            localStorage.setItem('iceland_2027_expenses_v10', JSON.stringify(expensesPaid));
-        }
+/* ================= Presupuesto ================= */
+const STATUSES = ['Pendiente', 'Confirmado', 'Espera', 'Cancelado'];
+const STATUS_LABEL = { Pendiente: 'Pendiente', Confirmado: 'Confirmado', Espera: 'En espera', Cancelado: 'Cancelado' };
+const DEFAULT_ITEMS = [
+  { id: 1, title: 'Vuelos ida y vuelta BCN — KEF (4 pers.)', price: 920, status: 'Pendiente' },
+  { id: 2, title: 'Cabaña con jacuzzi (4 noches)', price: 680, status: 'Pendiente' },
+  { id: 3, title: 'Alquiler 4x4 Duster + seguro', price: 340, status: 'Pendiente' },
+  { id: 4, title: 'Entradas Blue Lagoon / Sky Lagoon', price: 320, status: 'Pendiente' },
+  { id: 5, title: 'Gasolina estimada (5 días)', price: 120, status: 'Pendiente' },
+  { id: 6, title: 'Supermercado Bónus / Krónan (4 pers.)', price: 350, status: 'Pendiente' }
+];
+// Recupera datos de la versión anterior si existen
+let items = store.get('iceland_2027_items_v11', null) || store.get('iceland_2027_items_v10', null) || DEFAULT_ITEMS;
 
-        function loadRandomCuriosity() {
-            const randomItem = islandCuriosities[Math.floor(Math.random() * islandCuriosities.length)];
-            document.getElementById('curiosity-category').innerHTML = `<span>${randomItem.cat}</span> <small>🔄 Haz clic para ver otra</small>`;
-            document.getElementById('curiosity-text').innerText = randomItem.text;
-        }
+function renderItems() {
+  const active = items.filter(i => i.status !== 'Cancelado');
+  const total = active.reduce((s, i) => s + i.price, 0);
+  const confirmed = items.filter(i => i.status === 'Confirmado');
+  const confirmedTotal = confirmed.reduce((s, i) => s + i.price, 0);
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            document.getElementById('theme-icon').innerText = newTheme === 'dark' ? '🌙' : '☀️';
-        }
+  $('items-list').innerHTML = items.map(i => `
+    <div class="row ${i.status === 'Cancelado' ? 'cancelled' : ''}">
+      <div class="row-main">
+        <div class="row-title">${esc(i.title)}</div>
+        <div class="row-meta">
+          <button class="pill pill-${i.status}" onclick="cycleStatus(${i.id})">${STATUS_LABEL[i.status] || esc(i.status)}</button>
+          <span>${eur(i.price / 4)} / pers.</span>
+        </div>
+      </div>
+      <input class="price-input" type="number" step="0.01" min="0" value="${i.price}" onchange="editPrice(${i.id}, this.value)" aria-label="Precio">
+      <span class="hint">€</span>
+      <button class="x-btn" onclick="deleteItem(${i.id})" aria-label="Eliminar">✕</button>
+    </div>`).join('') || '<p class="hint">Sin partidas todavía.</p>';
 
-        function updateLastSyncLabel() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('last-sync-time').innerText = `Última actualización de precios: Hoy a las ${timeString}`;
-        }
+  $('total-budget').textContent = eur(total);
+  $('per-person').textContent = `${eur(total / 4)} por persona`;
+  $('total-confirmed').textContent = eur(confirmedTotal);
+  $('confirmed-count').textContent = `${confirmed.length} de ${active.length} partidas`;
+  $('people-grid').innerHTML = PEOPLE.map(p => `<div class="person"><div class="person-name">${p}</div><div class="person-val">${eur(total / 4)}</div></div>`).join('');
+  store.set('iceland_2027_items_v11', items);
+}
+function addItem(e) {
+  e.preventDefault();
+  const price = parseFloat($('new-price').value);
+  if (isNaN(price)) return;
+  items.push({ id: Date.now(), title: $('new-title').value.trim(), price, status: $('new-status').value });
+  e.target.reset();
+  renderItems();
+}
+function editPrice(id, val) {
+  const v = parseFloat(val);
+  if (isNaN(v) || v < 0) { renderItems(); return; }
+  items = items.map(i => i.id === id ? { ...i, price: v } : i);
+  renderItems();
+}
+function cycleStatus(id) {
+  items = items.map(i => i.id === id ? { ...i, status: STATUSES[(STATUSES.indexOf(i.status) + 1) % STATUSES.length] } : i);
+  renderItems();
+}
+function deleteItem(id) {
+  const it = items.find(i => i.id === id);
+  if (it && !confirm(`¿Eliminar "${it.title}"?`)) return;
+  items = items.filter(i => i.id !== id);
+  renderItems();
+}
 
-        function simulatePriceUpdate() {
-            items = items.map(item => {
-                if(item.status !== 'Confirmado') {
-                    const variation = (Math.random() * 20 - 10);
-                    let newPrice = Math.max(30, item.price + variation);
-                    return { ...item, price: parseFloat(newPrice.toFixed(2)) };
-                }
-                return item;
-            });
-            updateLastSyncLabel();
-            renderItems();
-            alert('¡Motores de búsqueda consultados! Precios actualizados en tiempo real.');
-        }
+/* ================= Itinerario ================= */
+const DAYS = [
+  { n: 17, wd: 'Mié', title: 'Llegada y primera noche', stops: ['Aterrizaje en Keflavík y recogida del 4x4', 'Compra grande en Bónus o Krónan', 'Check-in en la cabaña', 'Jacuzzi y primera búsqueda de auroras'], tags: ['~50 km', 'Compra para 2-3 días'] },
+  { n: 18, wd: 'Jue', title: 'Círculo Dorado', stops: ['Þingvellir: grieta entre placas', 'Geysir y Strokkur', 'Gullfoss con paredes de hielo', 'Vuelta con luz y auroras de noche'], tags: ['~230 km', '~3,5 h de coche'] },
+  { n: 19, wd: 'Vie', title: 'Costa Sur', stops: ['Seljalandsfoss (el sendero de detrás suele cerrar en invierno)', 'Skógafoss', 'Reynisfjara, playa de arena negra', 'Vík y regreso'], tags: ['~360 km ida y vuelta', 'Salir antes del amanecer'] },
+  { n: 20, wd: 'Sáb', title: 'Reikiavik y Sky Lagoon', stops: ['Hallgrímskirkja y centro', 'Harpa y paseo marítimo', 'Sky Lagoon al atardecer'], tags: ['Día tranquilo', 'Reservar hora en la laguna'] },
+  { n: 21, wd: 'Dom', title: 'Blue Lagoon y vuelta', stops: ['Check-out', 'Blue Lagoon (a 20 min del aeropuerto)', 'Devolución del coche y vuelo'], tags: ['Dejar 3 h antes del vuelo'] }
+];
+function renderDays() {
+  $('days-list').innerHTML = DAYS.map(d => `
+    <div class="day">
+      <div class="day-date"><div class="day-num">${d.n}</div><div class="day-wd">${d.wd}</div></div>
+      <div>
+        <h3>${d.title}</h3>
+        <ul>${d.stops.map(s => `<li>${s}</li>`).join('')}</ul>
+        <div class="day-tags">${d.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('') +
+    `<div class="note" style="margin-top:16px"><strong>Por confirmar:</strong> la ubicación exacta de la cabaña y los horarios de los vuelos. Según dónde esté la cabaña, puede convenir cambiar el orden de los días 2 y 3.</div>`;
+}
 
-        function cycleStatus(id) {
-            const statuses = ["Pendiente", "Confirmado", "Espera", "Cancelado"];
-            items = items.map(item => {
-                if(item.id === id) {
-                    const nextIdx = (statuses.indexOf(item.status) + 1) % statuses.length;
-                    return { ...item, status: statuses[nextIdx] };
-                }
-                return item;
-            });
-            renderItems();
-        }
+/* ================= Mapa ================= */
+const DAY_COLORS = { 1: '#7b786f', 2: '#3f6e7d', 3: '#a8742a', 4: '#5d8a6a', 5: '#8a5d7d' };
+const PLACES = [
+  { name: 'Reikiavik', day: 4, coords: [64.1418, -21.9266], wiki: 'Hallgrímskirkja',
+    desc: 'Capital y base del viaje: cafeterías, la iglesia Hallgrímskirkja y el auditorio Harpa frente al mar.',
+    fact: 'Es la capital de un estado soberano situada más al norte del mundo.' },
+  { name: 'Þingvellir', day: 2, coords: [64.2559, -21.1297], wiki: 'Þingvellir',
+    desc: 'Valle donde se ve la separación entre las placas de América y Eurasia. Patrimonio de la Humanidad.',
+    fact: 'Aquí se reunió el Althingi, el parlamento islandés, desde el año 930.' },
+  { name: 'Geysir y Strokkur', day: 2, coords: [64.3104, -20.3024], wiki: 'Strokkur',
+    desc: 'Zona geotérmica con pozas hirviendo. El gran Geysir apenas entra en erupción; Strokkur, sí.',
+    fact: 'Strokkur entra en erupción cada 5-10 minutos y lanza agua a unos 15-20 m, a veces hasta 40 m.' },
+  { name: 'Gullfoss', day: 2, coords: [64.3271, -20.1199], wiki: 'Gullfoss',
+    desc: 'Cascada en dos saltos sobre el río Hvítá. En invierno se forman paredes de hielo a los lados.',
+    fact: 'Su nombre significa "cascada dorada". El camino inferior puede cerrarse por hielo: usad crampones.' },
+  { name: 'Seljalandsfoss', day: 3, coords: [63.6156, -19.9886], wiki: 'Seljalandsfoss',
+    desc: 'Cascada de unos 60 m junto a la carretera 1. En verano se puede pasar por detrás.',
+    fact: 'En invierno el sendero de detrás suele cerrarse por hielo. Se ve igual de bien desde delante.' },
+  { name: 'Skógafoss', day: 3, coords: [63.5321, -19.5114], wiki: 'Skógafoss',
+    desc: 'Cortina de agua de 60 m de alto y 25 de ancho. Con sol suele formar arcoíris.',
+    fact: 'Unos 500 escalones suben al mirador de arriba. Con hielo, mejor con crampones.' },
+  { name: 'Reynisfjara', day: 3, coords: [63.4044, -19.0447], wiki: 'Reynisfjara',
+    desc: 'Playa de arena volcánica negra con columnas de basalto y las agujas de Reynisdrangar.',
+    fact: '⚠️ Peligro real: olas que entran de golpe mucho más lejos que las demás. No os acerquéis al agua ni deis la espalda al mar.' },
+  { name: 'Sky Lagoon', day: 4, coords: [64.1157, -21.9449], wiki: 'Sky Lagoon',
+    desc: 'Laguna geotermal con vistas al Atlántico, a 10 minutos del centro de Reikiavik.',
+    fact: 'Su ritual de 7 pasos incluye sauna, agua fría y niebla. Mejor al atardecer.' },
+  { name: 'Blue Lagoon', day: 5, coords: [63.8804, -22.4495], wiki: 'Blue Lagoon (geothermal spa)',
+    desc: 'Spa geotermal de agua turquesa rica en sílice, a unos 38 °C, entre campos de lava.',
+    fact: 'Está a unos 20 minutos del aeropuerto: encaja bien el último día antes del vuelo.' }
+];
+let tileLayer;
+const map = L.map('map', { scrollWheelZoom: false }).setView([64.0, -20.8], 7);
+function setMapTiles() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (tileLayer) map.removeLayer(tileLayer);
+  tileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, {
+    maxZoom: 18, subdomains: 'abcd',
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/">CARTO</a>'
+  }).addTo(map);
+}
+setMapTiles();
+PLACES.forEach((p, idx) => {
+  const icon = L.divIcon({ className: '', html: `<div class="pin" style="background:${DAY_COLORS[p.day]}">${idx + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] });
+  L.marker(p.coords, { icon }).addTo(map).bindTooltip(p.name).on('click', () => showPlace(p));
+});
+map.fitBounds(PLACES.map(p => p.coords), { padding: [30, 30] });
+$('legend').innerHTML = [2, 3, 4, 5].map(d => `<span><i style="background:${DAY_COLORS[d]}"></i>Día ${d} · ${DAYS[d - 1].title}</span>`).join('');
 
-        function renderItems() {
-            const listEl = document.getElementById('items-list');
-            listEl.innerHTML = '';
+const photoCache = {};
+async function getPhoto(title) {
+  if (photoCache[title] !== undefined) return photoCache[title];
+  try {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=thumbnail&pithumbsize=1000&redirects=1&format=json&origin=*&titles=${encodeURIComponent(title)}`;
+    const j = await (await fetch(url)).json();
+    const page = Object.values(j.query.pages)[0];
+    photoCache[title] = page && page.thumbnail ? { src: page.thumbnail.source, page: page.title } : null;
+  } catch (e) { photoCache[title] = null; }
+  return photoCache[title];
+}
+async function showPlace(p) {
+  $('place-day').textContent = `Día ${p.day} · ${DAYS[p.day - 1].title}`;
+  $('place-name').textContent = p.name;
+  $('place-desc').textContent = p.desc;
+  $('place-fact').textContent = p.fact;
+  const img = $('place-img'), credit = $('place-credit');
+  img.classList.remove('loaded'); credit.hidden = true;
+  const photo = await getPhoto(p.wiki);
+  if ($('place-name').textContent !== p.name) return; // el usuario ya ha tocado otro punto
+  if (photo) {
+    img.onload = () => img.classList.add('loaded');
+    img.src = photo.src; img.alt = p.name;
+    credit.innerHTML = `Foto: <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(photo.page)}" target="_blank" rel="noopener">Wikimedia</a>`;
+    credit.hidden = false;
+  } else {
+    img.removeAttribute('src');
+  }
+}
+showPlace(PLACES[0]);
 
-            let total = 0;
-            let confirmedTotal = 0;
-            let confirmedCount = 0;
+/* ================= Equipaje ================= */
+// d = Decathlon, l = Lefties (null = no recomendable), t = tienda técnica
+const PACKING = [
+  { cat: 'Capas base e intermedias', items: [
+    { id: 'merino', name: 'Camiseta térmica de lana merino', note: 'x2', d: 19.99, l: 12.99, t: 35 },
+    { id: 'mallas', name: 'Mallas térmicas', note: 'x2', d: 19.99, l: 12.99, t: 35 },
+    { id: 'polar', name: 'Forro polar grueso', d: 24.99, l: 15.99, t: 45 },
+    { id: 'chaleco', name: 'Chaleco o segunda capa acolchada', d: 39.99, l: 22.99, t: 75 } ] },
+  { cat: 'Capa exterior', items: [
+    { id: 'chaqueta', name: 'Chaqueta impermeable y cortavientos', note: 'Gore-Tex o similar', d: 69.99, l: null, t: 120 },
+    { id: 'pantalon', name: 'Pantalón de montaña impermeable', d: 49.99, l: null, t: 85 },
+    { id: 'cubre', name: 'Cubrepantalón de lluvia', d: 14.99, l: 9.99, t: 25 } ] },
+  { cat: 'Calzado', items: [
+    { id: 'botas', name: 'Botas de montaña impermeables', d: 49.99, l: null, t: 95 },
+    { id: 'crampones', name: 'Crampones ligeros', note: 'Muy útiles en Gullfoss y Skógafoss', d: 14.99, l: null, t: 25 },
+    { id: 'calcetines', name: 'Calcetines térmicos de merino', note: 'x3', d: 9.99, l: 5.99, t: 18 } ] },
+  { cat: 'Accesorios', items: [
+    { id: 'guantes', name: 'Guantes táctiles cortavientos', d: 12.99, l: 7.99, t: 22 },
+    { id: 'manoplas', name: 'Manoplas de abrigo', note: 'Para las noches de auroras', d: 16.99, l: 10.99, t: 30 },
+    { id: 'gorro', name: 'Gorro de lana y braga de cuello', d: 7.99, l: 4.99, t: 12 },
+    { id: 'pasamontanas', name: 'Pasamontañas cortavientos', d: 14.99, l: 8.99, t: 24 },
+    { id: 'powerbank', name: 'Power bank 10.000 mAh', note: 'El frío vacía las baterías rápido', d: 15.99, l: null, t: 25 },
+    { id: 'termo', name: 'Termo metálico 0,7 L', d: 9.99, l: 6.99, t: 18 },
+    { id: 'frontal', name: 'Linterna frontal', note: 'Con luz roja para las auroras', d: 12.99, l: null, t: 22 },
+    { id: 'solar', name: 'Crema solar facial y protector labial', d: 8.99, l: 5.99, t: 15 } ] }
+];
+const ALL_PACK = PACKING.flatMap(c => c.items);
+let packed = new Set(store.get('iceland_2027_packing', []));
+function renderPacking() {
+  $('pack-grid').innerHTML = PACKING.map(c => `
+    <div class="card pack-cat" style="margin-bottom:0">
+      <h3>${c.cat}</h3>
+      ${c.items.map(i => `
+        <label class="check">
+          <input type="checkbox" ${packed.has(i.id) ? 'checked' : ''} onchange="togglePack('${i.id}', this.checked)">
+          <span>${i.name}${i.note ? `<small>${i.note}</small>` : ''}</span>
+        </label>`).join('')}
+    </div>`).join('');
+  renderCart();
+}
+function togglePack(id, on) { on ? packed.add(id) : packed.delete(id); store.set('iceland_2027_packing', [...packed]); renderCart(); }
+function clearPacking() { packed.clear(); store.set('iceland_2027_packing', []); renderPacking(); }
+function renderCart() {
+  const sel = ALL_PACK.filter(i => packed.has(i.id));
+  const sum = k => sel.reduce((s, i) => s + (i[k] || 0), 0);
+  const missingL = sel.filter(i => i.l === null).length;
+  const stores = [
+    { k: 'd', name: 'Decathlon', desc: 'Buena relación calidad-precio', url: 'https://www.decathlon.es', total: sum('d'), complete: true },
+    { k: 'l', name: 'Lefties', desc: missingL ? `Sin ${missingL} artículo${missingL > 1 ? 's' : ''} técnico${missingL > 1 ? 's' : ''}` : 'Básicos económicos', url: 'https://www.lefties.com', total: sum('l'), complete: missingL === 0 },
+    { k: 't', name: 'Tienda técnica', desc: 'Barrabes · gama alta', url: 'https://www.barrabes.com', total: sum('t'), complete: true }
+  ];
+  const cheapest = sel.length ? stores.filter(s => s.complete).sort((a, b) => a.total - b.total)[0] : null;
+  $('stores').innerHTML = stores.map(s => `
+    <div class="store ${cheapest && cheapest.k === s.k ? 'best' : ''}">
+      <div class="store-name">${s.name}${cheapest && cheapest.k === s.k ? '<span class="badge">Más barata completa</span>' : ''}</div>
+      <div class="hint">${s.desc}</div>
+      <div class="store-price">${eur(s.total)}</div>
+      <a href="${s.url}" target="_blank" rel="noopener" style="font-size:13px">Ir a la tienda →</a>
+    </div>`).join('');
+}
 
-            items.forEach(item => {
-                total += item.price;
-                if(item.status === 'Confirmado') {
-                    confirmedTotal += item.price;
-                    confirmedCount++;
-                }
+/* ================= Cuentas ================= */
+let expenses = store.get('iceland_2027_expenses_v11', null) || store.get('iceland_2027_expenses_v10', null)
+  || [{ id: 1, payer: 'Diego', desc: 'Reserva inicial cabaña', amount: 200 }];
+$('payer').innerHTML = PEOPLE.map(p => `<option>${p}</option>`).join('');
 
-                listEl.innerHTML += `
-                    <div class="item-row">
-                        <div class="item-info">
-                            <span class="item-title">${item.title}</span>
-                            <div class="item-details">
-                                <button class="status-btn status-${item.status}" onclick="cycleStatus(${item.id})">${item.status}</button>
-                                <span>(${(item.price / 4).toFixed(2)} € / pers)</span>
-                            </div>
-                        </div>
-                        <div class="item-actions">
-                            <span class="item-price">${item.price.toFixed(2)} €</span>
-                            <button class="btn-delete" onclick="deleteItem(${item.id})">✕</button>
-                        </div>
-                    </div>
-                `;
-            });
+function renderExpenses() {
+  $('expenses-list').innerHTML = expenses.map(x => `
+    <div class="row">
+      <div class="row-main"><div class="row-title">${esc(x.desc)}</div><div class="row-meta">Pagó ${esc(x.payer)}</div></div>
+      <strong style="font-variant-numeric: tabular-nums">${eur(x.amount)}</strong>
+      <button class="x-btn" onclick="deleteExpense(${x.id})" aria-label="Eliminar">✕</button>
+    </div>`).join('') || '<p class="hint">Todavía no hay pagos.</p>';
 
-            const perPerson = total / 4;
-            document.getElementById('total-budget').innerText = `${total.toFixed(2)} €`;
-            document.getElementById('per-person-budget').innerText = `${perPerson.toFixed(2)} € / persona`;
-            
-            document.getElementById('total-confirmed').innerText = `${confirmedTotal.toFixed(2)} €`;
-            document.getElementById('confirmed-count').innerText = `${confirmedCount} ítems confirmados`;
+  const paid = Object.fromEntries(PEOPLE.map(p => [p, 0]));
+  expenses.forEach(x => { if (paid[x.payer] !== undefined) paid[x.payer] += x.amount; });
+  const total = Object.values(paid).reduce((a, b) => a + b, 0);
+  const share = total / PEOPLE.length;
+  $('debt-total').textContent = `Total adelantado: ${eur(total)} · a cada uno le corresponden ${eur(share)}`;
 
-            document.getElementById('cost-ximena').innerText = `${perPerson.toFixed(2)} €`;
-            document.getElementById('cost-fiorella').innerText = `${perPerson.toFixed(2)} €`;
-            document.getElementById('cost-raquel').innerText = `${perPerson.toFixed(2)} €`;
-            document.getElementById('cost-diego').innerText = `${perPerson.toFixed(2)} €`;
+  // Saldos en céntimos para evitar errores de redondeo
+  const bal = PEOPLE.map(p => ({ name: p, c: Math.round((paid[p] - share) * 100) }));
+  $('balances').innerHTML = bal.map(b => `
+    <div class="balance-row"><span>${b.name} <span class="hint">· pagó ${eur(paid[b.name])}</span></span>
+    <span class="${b.c > 0 ? 'pos' : b.c < 0 ? 'neg' : ''}">${b.c > 0 ? '+' : ''}${eur(b.c / 100)}</span></div>`).join('');
 
-            localStorage.setItem('iceland_2027_items_v10', JSON.stringify(items));
-        }
+  // Mínimo número de transferencias: el que más debe paga al que más tiene que recibir
+  const debtors = bal.filter(b => b.c < 0).map(b => ({ ...b, c: -b.c })).sort((a, b) => b.c - a.c);
+  const creditors = bal.filter(b => b.c > 0).sort((a, b) => b.c - a.c);
+  const transfers = [];
+  let i = 0, j = 0;
+  while (i < debtors.length && j < creditors.length) {
+    const amt = Math.min(debtors[i].c, creditors[j].c);
+    if (amt > 0) transfers.push({ from: debtors[i].name, to: creditors[j].name, amt });
+    debtors[i].c -= amt; creditors[j].c -= amt;
+    if (debtors[i].c === 0) i++;
+    if (creditors[j].c === 0) j++;
+  }
+  $('transfers').innerHTML = transfers.length
+    ? transfers.map(t => `<div class="transfer"><strong>${t.from}</strong><span class="hint">paga a</span><strong>${t.to}</strong><span class="amount">${eur(t.amt / 100)}</span></div>`).join('')
+    : '<div class="ok">Cuentas cuadradas: nadie debe nada.</div>';
 
-        function addItem(e) {
-            e.preventDefault();
-            const title = document.getElementById('new-item-title').value;
-            const price = parseFloat(document.getElementById('new-item-price').value);
-            const status = document.getElementById('new-item-status').value;
+  store.set('iceland_2027_expenses_v11', expenses);
+}
+function addExpense(e) {
+  e.preventDefault();
+  const amount = parseFloat($('exp-amount').value);
+  if (isNaN(amount)) return;
+  expenses.push({ id: Date.now(), payer: $('payer').value, desc: $('exp-desc').value.trim(), amount });
+  $('exp-desc').value = ''; $('exp-amount').value = '';
+  renderExpenses();
+  toast('Pago añadido');
+}
+function deleteExpense(id) {
+  const x = expenses.find(e => e.id === id);
+  if (x && !confirm(`¿Eliminar "${x.desc}"?`)) return;
+  expenses = expenses.filter(e => e.id !== id);
+  renderExpenses();
+}
 
-            items.push({ id: Date.now(), title, price, status });
-            renderItems();
+/* ================= Compartir / importar ================= */
+function encodeData() {
+  const json = JSON.stringify({ v: 1, items, expenses });
+  return btoa(String.fromCharCode(...new TextEncoder().encode(json)));
+}
+function decodeData(code) {
+  const m = code.match(/#datos=([^&\s]+)/);
+  const raw = decodeURIComponent((m ? m[1] : code).trim());
+  const bytes = Uint8Array.from(atob(raw), c => c.charCodeAt(0));
+  const data = JSON.parse(new TextDecoder().decode(bytes));
+  if (!Array.isArray(data.items) || !Array.isArray(data.expenses)) throw new Error('formato');
+  return data;
+}
+function applyData(data) {
+  items = data.items; expenses = data.expenses;
+  renderItems(); renderExpenses();
+  toast('Datos importados');
+}
+async function shareData() {
+  const code = encodeData();
+  const online = location.protocol.startsWith('http');
+  const text = online ? `${location.origin}${location.pathname}#datos=${encodeURIComponent(code)}` : code;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Islandia 2027 · datos', text }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(text); toast(online ? 'Enlace copiado' : 'Código copiado'); }
+  catch (e) {
+    $('dlg-title').textContent = 'Copia este código';
+    $('dlg-hint').textContent = 'Envíalo al grupo. Los demás lo pegan en Importar.';
+    $('dlg-text').value = text;
+    $('dlg-ok').textContent = 'Listo'; $('dlg-ok').onclick = closeDlg;
+    $('dlg').showModal();
+  }
+}
+function openImport() {
+  $('dlg-title').textContent = 'Importar datos';
+  $('dlg-hint').textContent = 'Pega aquí el enlace o el código que te han enviado. Sustituirá tus datos actuales.';
+  $('dlg-text').value = '';
+  $('dlg-ok').textContent = 'Importar';
+  $('dlg-ok').onclick = () => {
+    try { applyData(decodeData($('dlg-text').value)); closeDlg(); }
+    catch (e) { toast('El código no es válido'); }
+  };
+  $('dlg').showModal();
+}
+function closeDlg() { $('dlg').close(); }
+function checkHashImport() {
+  if (!location.hash.startsWith('#datos=')) return;
+  try {
+    const data = decodeData(location.hash);
+    if (confirm('Te han compartido datos del viaje. ¿Quieres importarlos? Sustituirán los que tienes.')) applyData(data);
+  } catch (e) { toast('El enlace no es válido'); }
+  history.replaceState(null, '', location.pathname);
+}
 
-            document.getElementById('new-item-title').value = '';
-            document.getElementById('new-item-price').value = '';
-        }
-
-        function deleteItem(id) {
-            items = items.filter(i => i.id !== id);
-            renderItems();
-        }
-
-        // Datos de Lugares con Fotografías Específicas y Reales
-        const locationsData = [
-            { 
-                id: "reykjavik",
-                name: "Reikiavik (Base Principal)", 
-                coords: [64.1466, -21.9426],
-                desc: "Capital de Islandia y base de operaciones del viaje. Destaca su famosa iglesia Hallgrímskirkja y su ambiente vibrante.",
-                curiosity: "Es la capital soberana situada más al norte del planeta y el 100% de su calefacción urbana proviene de agua geotérmica subterránea.",
-                img: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1200&auto=format&fit=crop"
-            },
-            { 
-                id: "thingvellir",
-                name: "Parque Nacional Þingvellir", 
-                coords: [64.2559, -21.1197],
-                desc: "Valle histórico y geológico donde se separan las placas tectónicas de América y Eurasia.",
-                curiosity: "Aquí se fundó el parlamento democrático activo más antiguo del mundo en el año 930 d.C.",
-                img: "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?q=80&w=1200&auto=format&fit=crop"
-            },
-            { 
-                id: "geysir",
-                name: "Zona Geotérmica de Geysir", 
-                coords: [64.3104, -20.3025],
-                desc: "Valle geotérmico activo famoso por el géiser Strokkur.",
-                curiosity: "El géiser Strokkur entra en erupción cada pocos minutos lanzando agua hirviendo hasta 30 metros de altura.",
-                img: "https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=1200&auto=format&fit=crop"
-            },
-            { 
-                id: "gullfoss",
-                name: "Cascada Gullfoss", 
-                coords: [64.3271, -20.1199],
-                desc: "Impresionante cascada escalonada sobre el río Hvítá, con paredes de hielo en invierno.",
-                curiosity: "Significa 'Cascada Dorada' debido al tono ligeramente dorado que refleja su agua glaciar bajo el sol.",
-                img: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1200&auto=format&fit=crop"
-            },
-            { 
-                id: "vik",
-                name: "Playa de Arena Negra (Reynisfjara)", 
-                coords: [63.4186, -19.0060],
-                desc: "Playa de arena volcánica negra rodeada de columnas basálticas monumentales.",
-                curiosity: "Las formaciones geométricas de basalto se forman por el enfriamiento lento y simétrico de la lava.",
-                img: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=1200&auto=format&fit=crop"
-            },
-            { 
-                id: "bluelagoon",
-                name: "Blue Lagoon (Laguna Azul)", 
-                coords: [63.8804, -22.4495],
-                desc: "Famoso spa geotermal de aguas turquesas ricas en sílice y minerales a 38°C.",
-                curiosity: "El agua de la laguna se renueva por completo cada 40 horas de forma natural mediante su ciclo geotérmico.",
-                img: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200&auto=format&fit=crop"
-            }
-        ];
-
-        const map = L.map('map').setView([64.1466, -21.9426], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        function updateLocationInspector(loc) {
-            document.getElementById('loc-img').src = loc.img;
-            document.getElementById('loc-img').alt = loc.name;
-            document.getElementById('loc-title').innerText = loc.name;
-            document.getElementById('loc-desc').innerText = loc.desc;
-            document.getElementById('loc-curiosity').innerHTML = `<strong>💡 Dato de interés:</strong> ${loc.curiosity}`;
-        }
-
-        locationsData.forEach(loc => {
-            const marker = L.marker(loc.coords).addTo(map);
-            marker.bindPopup(`<b>${loc.name}</b><br><span style="font-size:0.75rem;">Haz clic para ver fotos específicas e info abajo</span>`);
-            marker.on('click', () => {
-                updateLocationInspector(loc);
-            });
-        });
-
-        loadRandomCuriosity();
-        updateLastSyncLabel();
-        renderItems();
-        renderExpenses();
-    </script>
+/* ================= Inicio ================= */
+applyThemeIcon();
+nextCuriosity();
+renderItems();
+renderDays();
+renderPacking();
+renderExpenses();
+checkHashImport();
+loadWeather();
+loadKp();
+</script>
 </body>
 </html>
