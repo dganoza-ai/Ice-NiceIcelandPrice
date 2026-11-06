@@ -109,18 +109,61 @@
   .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
-  /* Widgets en vivo */
-  .widget { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; }
-  .widget-top { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .06em; }
-  .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
-  .live.on::before { background: var(--green); animation: pulse 2s infinite; }
+  /* Widgets en vivo: cristal sobre cielo animado */
+  .sky {
+    position: relative; overflow: hidden; border-radius: 26px; padding: 14px;
+    background: linear-gradient(160deg, #dde8e8 0%, #e9ece6 55%, #ece6ee 100%);
+    isolation: isolate;
+  }
+  :root[data-theme="dark"] .sky { background: linear-gradient(160deg, #0d1a20 0%, #121a1d 55%, #18141d 100%); }
+  .aurora { position: absolute; border-radius: 50%; filter: blur(38px); opacity: .6; z-index: -1; will-change: transform; }
+  .aurora.a1 { width: 70%; height: 90%; left: -15%; top: -30%; background: #9fd6c2; animation: drift1 16s ease-in-out infinite alternate; }
+  .aurora.a2 { width: 60%; height: 80%; right: -15%; top: -10%; background: #a7c3e3; animation: drift2 20s ease-in-out infinite alternate; }
+  .aurora.a3 { width: 55%; height: 70%; left: 25%; bottom: -45%; background: #cbb9e3; animation: drift3 24s ease-in-out infinite alternate; }
+  :root[data-theme="dark"] .aurora { opacity: .35; }
+  :root[data-theme="dark"] .aurora.a1 { background: #2fbf8f; }
+  :root[data-theme="dark"] .aurora.a2 { background: #2f7fb8; }
+  :root[data-theme="dark"] .aurora.a3 { background: #7d5bb8; }
+  @keyframes drift1 { to { transform: translate(30%, 25%) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-35%, 20%) scale(.9); } }
+  @keyframes drift3 { to { transform: translate(-20%, -35%) scale(1.2); } }
+  .snow {
+    position: absolute; inset: -100px 0 0 0; z-index: -1; pointer-events: none; opacity: .8;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 80px 70px, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 140px 20px, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 200px 90px, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 60px 110px, #fff 50%, transparent 51%);
+    background-size: 220px 120px;
+    animation: snow 14s linear infinite;
+  }
+  @keyframes snow { from { transform: translateY(0); } to { transform: translateY(120px); } }
+  .widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .glass {
+    display: flex; flex-direction: column; gap: 2px; min-height: 132px; padding: 12px 14px;
+    border-radius: 20px; color: var(--text); text-decoration: none;
+    background: rgba(255, 255, 255, .42);
+    border: 1px solid rgba(255, 255, 255, .65);
+    -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .glass:hover { text-decoration: none; transform: translateY(-2px); background: rgba(255, 255, 255, .55); }
+  :root[data-theme="dark"] .glass { background: rgba(255, 255, 255, .06); border-color: rgba(255, 255, 255, .1); }
+  :root[data-theme="dark"] .glass:hover { background: rgba(255, 255, 255, .1); }
+  .g-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 500; opacity: .75; }
+  .g-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 2px; }
+  .g-val { font-family: 'Fraunces', serif; font-size: 30px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .g-icon { font-size: 22px; line-height: 1; }
+  .g-line { font-size: 11.5px; opacity: .75; line-height: 1.35; }
+  .g-line strong { font-weight: 600; opacity: 1; }
+  .live { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; letter-spacing: .04em; }
+  .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .4; }
+  .live.on::before { background: var(--green); opacity: 1; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-  .widget-val { font-family: 'Fraunces', serif; font-size: 30px; line-height: 1.1; }
-  .widget-desc { font-size: 13px; color: var(--muted); min-height: 40px; }
-  .widget a { font-size: 12px; margin-top: auto; }
-  .kp-bar { height: 4px; border-radius: 4px; background: var(--soft); overflow: hidden; }
-  .kp-bar span { display: block; height: 100%; width: 0; background: var(--green); transition: width .6s ease; }
+  .kp-bar { height: 4px; border-radius: 4px; background: rgba(127, 127, 127, .18); overflow: hidden; margin: 4px 0 2px; }
+  .kp-bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #6fbf9a, #7f9fd6, #b48fd6); transition: width .8s ease; }
+  @media (prefers-reduced-motion: reduce) { .aurora, .snow { animation: none; } }
 
   /* Curiosidad */
   .curiosity { background: var(--accent-soft); border: none; border-radius: 18px; padding: 18px 20px; margin: 16px 0; text-align: left; width: 100%; display: block; }
@@ -221,6 +264,11 @@
   .link-row small { display: block; color: var(--muted); font-size: 12px; }
   .link-arrow { color: var(--muted); transition: transform .2s; }
 
+  .sos { display: flex; align-items: center; gap: 14px; background: var(--red-soft); color: var(--text); border-radius: 14px; padding: 14px 16px; margin: 12px 0 4px; }
+  .sos:hover { text-decoration: none; opacity: .9; }
+  .sos small { display: block; color: var(--muted); font-size: 12px; }
+  .sos-num { font-family: 'Fraunces', serif; font-size: 34px; color: var(--red); line-height: 1; }
+
   /* Deudas */
   .transfer { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--soft); border-radius: 12px; margin-top: 8px; }
   .transfer strong { font-weight: 600; }
@@ -281,19 +329,23 @@
 
   <!-- ============ PRESUPUESTO ============ -->
   <section id="presupuesto" class="tab active">
-    <div class="grid-2">
-      <div class="widget">
-        <div class="widget-top"><span>Reikiavik ahora</span><span class="live" id="weather-live">cargando</span></div>
-        <div class="widget-val" id="w-temp">—</div>
-        <div class="widget-desc" id="w-desc">Consultando Open-Meteo…</div>
-        <a href="https://en.vedur.is/" target="_blank" rel="noopener">Previsión oficial en vedur.is ↗</a>
-      </div>
-      <div class="widget">
-        <div class="widget-top"><span>Auroras · índice Kp</span><span class="live" id="kp-live">cargando</span></div>
-        <div class="widget-val" id="kp-val">—</div>
-        <div class="kp-bar"><span id="kp-bar"></span></div>
-        <div class="widget-desc" id="kp-desc">Consultando NOAA…</div>
-        <a href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" rel="noopener">Mapa de nubes y auroras ↗</a>
+    <div class="sky">
+      <div class="aurora a1"></div><div class="aurora a2"></div><div class="aurora a3"></div><div class="snow"></div>
+      <div class="widgets">
+        <a class="glass" href="https://en.vedur.is/" target="_blank" rel="noopener" aria-label="Tiempo en Reikiavik">
+          <div class="g-top"><span>Reikiavik</span><span class="live" id="weather-live">…</span></div>
+          <div class="g-row"><span class="g-val" id="w-temp">—</span><span class="g-icon" id="w-icon"></span></div>
+          <div class="g-line"><strong id="w-desc">Cargando</strong></div>
+          <div class="g-line" id="w-feel"></div>
+          <div class="g-line" id="w-light"></div>
+        </a>
+        <a class="glass" href="https://en.vedur.is/weather/forecasts/aurora/" target="_blank" rel="noopener" aria-label="Previsión de auroras">
+          <div class="g-top"><span>Auroras</span><span class="live" id="kp-live">…</span></div>
+          <div class="g-row"><span class="g-val" id="kp-val">—</span><span class="g-icon">✦</span></div>
+          <div class="kp-bar"><span id="kp-bar"></span></div>
+          <div class="g-line"><strong id="kp-level">Cargando</strong></div>
+          <div class="g-line" id="kp-desc"></div>
+        </a>
       </div>
     </div>
 
@@ -382,10 +434,50 @@
       <div class="grid-2" id="stores" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));"></div>
       <div class="note"><strong>Ojo con Lefties:</strong> sirve para capas básicas, gorros o calcetines, pero no vende Gore-Tex ni botas técnicas. Para la chaqueta, el pantalón impermeable y las botas, compara solo Decathlon y la tienda técnica.</div>
     </div>
+
+    <div class="card">
+      <h2>Consejos de equipaje</h2>
+      <p class="hint">Lo que más se olvida o más dinero ahorra.</p>
+      <div class="links" style="margin-top:6px">
+        <div class="link-row"><span>Sistema de 3 capas<small>Base de merino (nada de algodón), polar en medio e impermeable por fuera. Mejor varias finas que una gruesa.</small></span></div>
+        <div class="link-row"><span>No hace falta adaptador<small>Los enchufes son como los de España (tipo C/F, 230 V).</small></span></div>
+        <div class="link-row"><span>Tarjeta con PIN<small>Se paga con tarjeta casi en todo. Muchas gasolineras de autoservicio piden el PIN: aseguraos de saberlo.</small></span></div>
+        <div class="link-row"><span>Compra el alcohol al llegar<small>En el duty free de llegadas de Keflavík es mucho más barato que en las tiendas Vínbúðin.</small></span></div>
+        <div class="link-row"><span>Botella reutilizable<small>El agua fría del grifo es excelente. La caliente huele a azufre, es normal.</small></span></div>
+        <div class="link-row"><span>Lo voluminoso, puesto<small>Si voláis con equipaje limitado, llevad la chaqueta y las botas en el avión.</small></span></div>
+        <div class="link-row"><span>Mapas sin conexión<small>Descargad el sur de Islandia en Google Maps: fuera de la carretera 1 la cobertura falla.</small></span></div>
+        <div class="link-row"><span>Tarjeta Sanitaria Europea<small>Es válida en Islandia, pero aun así se paga parte de la atención. Merece la pena un seguro de viaje.</small></span></div>
+      </div>
+    </div>
   </section>
 
   <!-- ============ ENLACES ============ -->
   <section id="enlaces" class="tab">
+    <div class="card">
+      <h2>Emergencias</h2>
+      <p class="hint">Toca un número para llamar. Guardadlos en el móvil antes de salir.</p>
+      <a class="sos" href="tel:112"><span class="sos-num">112</span><span>Emergencias<small>Policía, ambulancia, bomberos y rescate · 24 h</small></span></a>
+      <div class="links">
+        <a class="link-row" href="tel:1700"><span>1700 · Línea de salud<small>Enfermería 24 h: te dicen a dónde ir si no es grave</small></span><span class="link-arrow">☏</span></a>
+        <a class="link-row" href="tel:1770"><span>1770 · Læknavaktin<small>Médico fuera de horario en Reikiavik (Háaleitisbraut 68)</small></span><span class="link-arrow">☏</span></a>
+        <a class="link-row" href="tel:+3545431000"><span>Hospital Landspítali · +354 543 1000<small>Urgencias 24 h en Fossvogur, Reikiavik</small></span><span class="link-arrow">☏</span></a>
+        <a class="link-row" href="https://112.is/" target="_blank" rel="noopener"><span>Chat de emergencias 112.is<small>Por si no podéis hablar</small></span><span class="link-arrow">→</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>España en Islandia</h2>
+      <p class="hint">No hay embajada en Islandia: la cubre la Embajada de España en Oslo, con un consulado honorario en Reikiavik.</p>
+      <div class="links" style="margin-top:6px">
+        <a class="link-row" href="tel:+4792247979"><span>Emergencia consular 24 h · +47 922 47 979<small>Solo emergencias reales: pérdida de pasaporte, detención, accidente grave</small></span><span class="link-arrow">☏</span></a>
+        <a class="link-row" href="tel:+3547759221"><span>Consulado honorario · +354 775 9221<small>Hafnartorg, Kalkofnsvegur 2, 3.ª planta · lunes y miércoles 10-16 h con cita</small></span><span class="link-arrow">☏</span></a>
+        <a class="link-row" href="mailto:consul@espana.is"><span>consul@espana.is<small>Correo del consulado honorario</small></span><span class="link-arrow">✉</span></a>
+        <a class="link-row" href="tel:+4722926690"><span>Embajada en Oslo · +47 22 92 66 90<small>Consultas en horario de oficina · emb.oslo.sc@maec.es</small></span><span class="link-arrow">☏</span></a>
+        <a class="link-row" href="https://registroviajeros.exteriores.gob.es/" target="_blank" rel="noopener"><span>Registro de Viajeros<small>Apuntaos antes de ir: así os localizan si pasa algo</small></span><span class="link-arrow">→</span></a>
+      </div>
+      <div class="note"><strong>Para la familia en España:</strong> si os pasa algo, pueden llamar a la emergencia consular desde España al <a href="tel:+34910001249">91 000 1249</a>.</div>
+    </div>
+
     <div class="card">
       <h2>Seguridad y carreteras</h2>
       <div class="links">
@@ -446,7 +538,7 @@
     </div>
   </section>
 
-  <footer>Tiempo: Open-Meteo · Auroras: NOAA SWPC · Fotos: Wikimedia Commons · Mapa: © OpenStreetMap, © CARTO</footer>
+  <footer>Tiempo: Open-Meteo · Auroras: NOAA SWPC · Fotos: Wikimedia Commons · Mapa: © Esri, © OpenStreetMap</footer>
 </div>
 
 <dialog id="dlg">
@@ -491,7 +583,7 @@ function toggleTheme() {
 document.querySelectorAll('.tabs button').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b === btn));
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.id === btn.dataset.tab));
-  if (btn.dataset.tab === 'mapa' && window.map) setTimeout(() => map.invalidateSize(), 60);
+  if (btn.dataset.tab === 'mapa' && window.map) setTimeout(fitMap, 60);
 }));
 
 /* ================= Cuenta regresiva ================= */
@@ -516,6 +608,7 @@ const WMO = {
   95: 'Tormenta', 96: 'Tormenta con granizo', 99: 'Tormenta con granizo fuerte'
 };
 let cloudCover = null;
+const wIcon = c => c <= 1 ? '☀︎' : c === 2 ? '⛅︎' : c === 3 ? '☁︎' : c <= 48 ? '🌫' : (c >= 71 && c <= 77) || c === 85 || c === 86 ? '❄︎' : c >= 95 ? '⚡︎' : '☂︎';
 async function loadWeather() {
   try {
     const url = 'https://api.open-meteo.com/v1/forecast?latitude=64.1466&longitude=-21.9426'
@@ -527,13 +620,17 @@ async function loadWeather() {
     const c = j.current;
     cloudCover = c.cloud_cover;
     const hm = s => s ? s.slice(11, 16) : '—';
-    $('w-temp').textContent = `${Math.round(c.temperature_2m)}°C`;
-    $('w-desc').textContent = `${WMO[c.weather_code] || 'Sin dato'} · sensación ${Math.round(c.apparent_temperature)}°C · viento ${Math.round(c.wind_speed_10m)} km/h · luz ${hm(j.daily.sunrise[0])}–${hm(j.daily.sunset[0])}`;
+    $('w-temp').textContent = `${Math.round(c.temperature_2m)}°`;
+    $('w-icon').textContent = wIcon(c.weather_code);
+    $('w-desc').textContent = WMO[c.weather_code] || 'Sin dato';
+    $('w-feel').textContent = `Sensación ${Math.round(c.apparent_temperature)}° · ${Math.round(c.wind_speed_10m)} km/h`;
+    $('w-light').textContent = `Luz ${hm(j.daily.sunrise[0])}–${hm(j.daily.sunset[0])}`;
     $('weather-live').textContent = 'en vivo'; $('weather-live').classList.add('on');
     updateKpDesc();
   } catch (e) {
-    $('w-temp').textContent = 'Sin conexión';
-    $('w-desc').textContent = 'No se ha podido cargar el tiempo. Consulta vedur.is.';
+    $('w-temp').textContent = '—';
+    $('w-desc').textContent = 'Sin conexión';
+    $('w-feel').textContent = 'Toca para ver vedur.is';
     $('weather-live').textContent = 'sin datos';
   }
 }
@@ -564,24 +661,21 @@ async function loadKp() {
     } catch (e) {}
   }
   if (kpNow === null) {
-    $('kp-val').textContent = 'Sin conexión';
-    $('kp-desc').textContent = 'No se ha podido cargar el índice. Consulta vedur.is.';
+    $('kp-level').textContent = 'Sin conexión';
+    $('kp-desc').textContent = 'Toca para ver vedur.is';
     $('kp-live').textContent = 'sin datos';
     return;
   }
-  const level = kpNow >= 5 ? 'Tormenta' : kpNow >= 4 ? 'Alto' : kpNow >= 3 ? 'Moderado' : kpNow >= 2 ? 'Bajo' : 'Muy bajo';
-  $('kp-val').textContent = `Kp ${kpNow.toFixed(1)} · ${level}`;
+  const level = kpNow >= 5 ? 'Tormenta solar' : kpNow >= 4 ? 'Actividad alta' : kpNow >= 3 ? 'Actividad moderada' : kpNow >= 2 ? 'Actividad baja' : 'Muy baja';
+  $('kp-val').textContent = `Kp ${kpNow.toFixed(1)}`;
+  $('kp-level').textContent = level;
   $('kp-bar').style.width = Math.min(100, kpNow / 9 * 100) + '%';
   $('kp-live').textContent = 'en vivo'; $('kp-live').classList.add('on');
   updateKpDesc();
 }
 function updateKpDesc() {
   if (kpNow === null) return;
-  let txt = kpNow >= 3 ? 'Buena actividad: en Islandia se pueden ver con Kp 2-3 si el cielo está despejado.'
-    : kpNow >= 2 ? 'Actividad suficiente en Islandia si no hay nubes.'
-    : 'Actividad baja ahora mismo.';
-  if (cloudCover !== null) txt += ` Nubes en Reikiavik: ${cloudCover}%.`;
-  $('kp-desc').textContent = txt;
+  $('kp-desc').textContent = cloudCover !== null ? `Nubes ${cloudCover}% · visibles desde Kp 2` : 'Visibles desde Kp 2 sin nubes';
 }
 
 /* ================= Curiosidades ================= */
@@ -721,20 +815,37 @@ const PLACES = [
 ];
 let tileLayer;
 const map = L.map('map', { scrollWheelZoom: false }).setView([64.0, -20.8], 7);
+// Teselas sin clave de API: Esri gris claro/oscuro, con OpenStreetMap como respaldo si fallan
+let labelLayer, tileErrors = 0, useOsm = false;
+const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
 function setMapTiles() {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  if (tileLayer) map.removeLayer(tileLayer);
-  tileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, {
-    maxZoom: 18, subdomains: 'abcd',
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/">CARTO</a>'
+  [tileLayer, labelLayer].forEach(l => l && map.removeLayer(l));
+  labelLayer = null;
+  if (useOsm) {
+    tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    return;
+  }
+  const tone = dark ? 'Dark' : 'Light';
+  tileLayer = L.tileLayer(`${ESRI}World_${tone}_Gray_Base/MapServer/tile/{z}/{y}/{x}`, {
+    maxZoom: 16, attribution: 'Mapa © Esri · HERE · OpenStreetMap'
   }).addTo(map);
+  labelLayer = L.tileLayer(`${ESRI}World_${tone}_Gray_Reference/MapServer/tile/{z}/{y}/{x}`, { maxZoom: 16 }).addTo(map);
+  tileLayer.on('tileerror', () => { if (++tileErrors > 4 && !useOsm) { useOsm = true; setMapTiles(); } });
 }
 setMapTiles();
 PLACES.forEach((p, idx) => {
   const icon = L.divIcon({ className: '', html: `<div class="pin" style="background:${DAY_COLORS[p.day]}">${idx + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] });
   L.marker(p.coords, { icon }).addTo(map).bindTooltip(p.name).on('click', () => showPlace(p));
 });
-map.fitBounds(PLACES.map(p => p.coords), { padding: [30, 30] });
+// El mapa se crea con la pestaña oculta: se encuadra la primera vez que se muestra
+let mapFitted = false;
+function fitMap() {
+  map.invalidateSize();
+  if (!mapFitted) { map.fitBounds(PLACES.map(p => p.coords), { padding: [30, 30] }); mapFitted = true; }
+}
 $('legend').innerHTML = [2, 3, 4, 5].map(d => `<span><i style="background:${DAY_COLORS[d]}"></i>Día ${d} · ${DAYS[d - 1].title}</span>`).join('');
 
 const photoCache = {};
@@ -792,7 +903,15 @@ const PACKING = [
     { id: 'powerbank', name: 'Power bank 10.000 mAh', note: 'El frío vacía las baterías rápido', d: 15.99, l: null, t: 25 },
     { id: 'termo', name: 'Termo metálico 0,7 L', d: 9.99, l: 6.99, t: 18 },
     { id: 'frontal', name: 'Linterna frontal', note: 'Con luz roja para las auroras', d: 12.99, l: null, t: 22 },
-    { id: 'solar', name: 'Crema solar facial y protector labial', d: 8.99, l: 5.99, t: 15 } ] }
+    { id: 'solar', name: 'Crema solar facial y protector labial', d: 8.99, l: 5.99, t: 15 } ] },
+  { cat: 'Extras recomendados', items: [
+    { id: 'banador', name: 'Bañador y chanclas', note: 'Para las lagunas y el jacuzzi', d: 14.99, l: 9.99, t: 25 },
+    { id: 'toalla', name: 'Toalla de microfibra', note: 'Si vuestra entrada no incluye toalla', d: 9.99, l: 7.99, t: 20 },
+    { id: 'gafas', name: 'Gafas de sol', note: 'El sol de invierno va bajo y la nieve deslumbra', d: 9.99, l: 7.99, t: 30 },
+    { id: 'mochila', name: 'Mochila de día impermeable 20 L', d: 19.99, l: null, t: 60 },
+    { id: 'estanca', name: 'Funda estanca para el móvil', note: 'Para el agua de las cascadas y las lagunas', d: 7.99, l: null, t: 15 },
+    { id: 'usbcoche', name: 'Cargador USB para el coche', d: 9.99, l: null, t: 15 },
+    { id: 'calentadores', name: 'Calentadores de manos', note: 'Pack para las noches de auroras', d: 5.99, l: null, t: 10 } ] }
 ];
 const ALL_PACK = PACKING.flatMap(c => c.items);
 let packed = new Set(store.get('iceland_2027_packing', []));
