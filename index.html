@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f6f5f1">
-<title>Ice, Ice, Paradise · Islandia 2027</title>
+<title>Islandia 2027 · Þetta reddast</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -29,7 +29,10 @@
     --amber-soft: #f5ecdc;
     --red: #b4553c;
     --red-soft: #f6e6e0;
-    --shadow: 0 1px 2px rgba(30, 28, 24, .04), 0 4px 16px rgba(30, 28, 24, .04);
+    --shadow: 0 1px 2px rgba(30, 28, 24, .03), 0 8px 24px rgba(30, 28, 24, .05);
+    --glass: rgba(255, 255, 255, .52);
+    --glass-line: rgba(255, 255, 255, .8);
+    --glass-soft: rgba(255, 255, 255, .45);
   }
   :root[data-theme="dark"] {
     --bg: #131517;
@@ -47,6 +50,9 @@
     --red: #e08b74;
     --red-soft: #31211d;
     --shadow: none;
+    --glass: rgba(28, 31, 35, .5);
+    --glass-line: rgba(255, 255, 255, .08);
+    --glass-soft: rgba(255, 255, 255, .05);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,7 +94,9 @@
   .tabs {
     display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
     border-bottom: 1px solid var(--line); margin-bottom: 24px;
-    position: sticky; top: 0; background: var(--bg); z-index: 500; padding-top: 4px;
+    position: sticky; top: 8px; z-index: 500; padding: 4px 6px 0; border-radius: 16px;
+    background: var(--glass); border: 1px solid var(--glass-line);
+    -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
   }
   .tabs::-webkit-scrollbar { display: none; }
   .tabs button {
@@ -108,6 +116,31 @@
   .section-title { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
   .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+  /* Fondo de aurora para toda la página */
+  .bg-aurora { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+  .bg-aurora i { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .38; will-change: transform; }
+  .bg-aurora i:nth-child(1) { width: 55vmax; height: 40vmax; left: -15vmax; top: -10vmax; background: #a7d8c5; animation: drift1 28s ease-in-out infinite alternate; }
+  .bg-aurora i:nth-child(2) { width: 50vmax; height: 40vmax; right: -20vmax; top: 30vh; background: #b3c9e6; animation: drift2 34s ease-in-out infinite alternate; }
+  .bg-aurora i:nth-child(3) { width: 45vmax; height: 35vmax; left: 10vw; bottom: -20vmax; background: #d4c4e8; animation: drift3 40s ease-in-out infinite alternate; }
+  :root[data-theme="dark"] .bg-aurora i { opacity: .16; }
+  :root[data-theme="dark"] .bg-aurora i:nth-child(1) { background: #2fbf8f; }
+  :root[data-theme="dark"] .bg-aurora i:nth-child(2) { background: #2f7fb8; }
+  :root[data-theme="dark"] .bg-aurora i:nth-child(3) { background: #7d5bb8; }
+  @media (prefers-reduced-motion: reduce) { .bg-aurora i { animation: none; } }
+
+  /* Cristal en tarjetas y bloques */
+  .card, .cd-cell, .icon-btn, dialog, .btn-ghost {
+    background: var(--glass); border-color: var(--glass-line);
+    -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
+  }
+  .curiosity { background: color-mix(in srgb, var(--accent-soft) 60%, transparent); border: 1px solid var(--glass-line);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+  .motto { font-family: 'Fraunces', serif; font-size: 18px; margin-top: 8px; color: var(--accent); }
+  .motto em { font-style: italic; }
+  .price-links { display: flex; gap: 6px; flex-wrap: wrap; flex-basis: 100%; margin-top: -2px; }
+  .price-links a { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--glass-soft); border: 1px solid var(--glass-line); color: var(--accent); }
+  .price-links a:hover { text-decoration: none; background: var(--accent-soft); }
 
   /* Widgets en vivo: cristal sobre cielo animado */
   .sky {
@@ -179,7 +212,7 @@
   .person-val { font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
 
   /* Lista de gastos */
-  .row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
   .row:last-child { border-bottom: none; }
   .row-main { flex: 1; min-width: 0; }
   .row-title { font-weight: 500; overflow-wrap: anywhere; }
@@ -297,16 +330,25 @@
     #map { height: 320px; }
     .stat-val { font-size: 28px; }
   }
+  /* Cristal: capas internas (al final para que manden) */
+  .person, .store, .transfer, .fact, .tag { background: var(--glass-soft); }
+  .field { background: var(--glass-soft); border: 1px solid var(--glass-line); }
+  .field:focus { background: var(--glass); }
+  .ok { background: color-mix(in srgb, var(--green-soft) 70%, transparent); }
+  .note { background: color-mix(in srgb, var(--amber-soft) 75%, transparent); }
+  .sos { background: color-mix(in srgb, var(--red-soft) 75%, transparent); }
 </style>
 </head>
 <body>
+<div class="bg-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="wrap">
 
   <header>
     <div>
-      <div class="eyebrow">Islandia · 17—21 febrero 2027</div>
-      <h1>Ice, Ice, Paradise</h1>
-      <p class="subtitle">Ximena, Fiorella, Raquel y Diego · 5 días / 4 noches</p>
+      <div class="eyebrow">17—21 febrero 2027 · 5 días / 4 noches</div>
+      <h1>Islandia</h1>
+      <p class="motto"><em>«Þetta reddast»</em> — al final, todo saldrá bien</p>
+      <p class="subtitle">Ximena, Fiorella, Raquel y Diego</p>
     </div>
     <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">☾</button>
   </header>
@@ -384,9 +426,10 @@
         <select class="field" id="new-status">
           <option>Pendiente</option><option>Confirmado</option><option value="Espera">En espera</option>
         </select>
+        <input class="field wide" id="new-url" type="text" inputmode="url" autocomplete="off" placeholder="Enlace al precio (opcional)" style="grid-column: 1 / -1">
         <button class="btn" type="submit">Añadir</button>
       </form>
-      <p class="hint" style="margin-top:12px">Las partidas canceladas no suman al total. Los precios son estimaciones: actualízalos cuando reservéis.</p>
+      <p class="hint" style="margin-top:12px">Los enlaces abren la búsqueda con vuestras fechas y 4 personas. Mira el precio, cámbialo aquí y se guarda la fecha de revisión. Las partidas canceladas no suman al total.</p>
     </div>
   </section>
 
@@ -706,6 +749,22 @@ const DEFAULT_ITEMS = [
   { id: 5, title: 'Gasolina estimada (5 días)', price: 120, status: 'Pendiente' },
   { id: 6, title: 'Supermercado Bónus / Krónan (4 pers.)', price: 350, status: 'Pendiente' }
 ];
+// Búsquedas con fechas (17-21 feb 2027) y 4 personas ya puestas
+const SEARCHES = {
+  1: [ ['Skyscanner', 'https://www.skyscanner.es/transporte/vuelos/bcn/kef/270217/270221/?adultsv2=4&cabinclass=economy'],
+       ['Kayak', 'https://www.kayak.es/flights/BCN-KEF/2027-02-17/2027-02-21/4adults'],
+       ['Google Flights', 'https://www.google.com/travel/flights?q=Vuelos%20de%20BCN%20a%20KEF%20el%202027-02-17%20vuelta%202027-02-21%204%20adultos&hl=es'] ],
+  2: [ ['Booking', 'https://www.booking.com/searchresults.es.html?ss=Islandia&checkin=2027-02-17&checkout=2027-02-21&group_adults=4&no_rooms=1&group_children=0'],
+       ['Airbnb', 'https://www.airbnb.es/s/Islandia/homes?checkin=2027-02-17&checkout=2027-02-21&adults=4'],
+       ['Kayak', 'https://www.kayak.es/hotels/Iceland/2027-02-17/2027-02-21/4adults'] ],
+  3: [ ['Kayak', 'https://www.kayak.es/cars/KEF/2027-02-17/2027-02-21'],
+       ['Blue Car Rental', 'https://www.bluecarrental.is'] ],
+  4: [ ['Blue Lagoon', 'https://www.bluelagoon.com'],
+       ['Sky Lagoon', 'https://www.skylagoon.com'] ],
+  6: [ ['Bónus', 'https://www.bonus.is'], ['Krónan', 'https://kronan.is'] ]
+};
+const linksFor = i => i.url ? [['Ver precio', i.url]] : (SEARCHES[i.id] || []);
+const fmtDate = t => new Date(t).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
 // Recupera datos de la versión anterior si existen
 let items = store.get('iceland_2027_items_v11', null) || store.get('iceland_2027_items_v10', null) || DEFAULT_ITEMS;
 
@@ -722,11 +781,13 @@ function renderItems() {
         <div class="row-meta">
           <button class="pill pill-${i.status}" onclick="cycleStatus(${i.id})">${STATUS_LABEL[i.status] || esc(i.status)}</button>
           <span>${eur(i.price / 4)} / pers.</span>
+          ${i.checked ? `<span>· revisado ${fmtDate(i.checked)}</span>` : ''}
         </div>
       </div>
       <input class="price-input" type="number" step="0.01" min="0" value="${i.price}" onchange="editPrice(${i.id}, this.value)" aria-label="Precio">
       <span class="hint">€</span>
       <button class="x-btn" onclick="deleteItem(${i.id})" aria-label="Eliminar">✕</button>
+      ${linksFor(i).length ? `<div class="price-links">${linksFor(i).map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(n)} ↗</a>`).join('')}</div>` : ''}
     </div>`).join('') || '<p class="hint">Sin partidas todavía.</p>';
 
   $('total-budget').textContent = eur(total);
@@ -740,14 +801,16 @@ function addItem(e) {
   e.preventDefault();
   const price = parseFloat($('new-price').value);
   if (isNaN(price)) return;
-  items.push({ id: Date.now(), title: $('new-title').value.trim(), price, status: $('new-status').value });
+  let url = $('new-url').value.trim();
+  if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+  items.push({ id: Date.now(), title: $('new-title').value.trim(), price, status: $('new-status').value, url: url || undefined, checked: Date.now() });
   e.target.reset();
   renderItems();
 }
 function editPrice(id, val) {
   const v = parseFloat(val);
   if (isNaN(v) || v < 0) { renderItems(); return; }
-  items = items.map(i => i.id === id ? { ...i, price: v } : i);
+  items = items.map(i => i.id === id ? { ...i, price: v, checked: Date.now() } : i);
   renderItems();
 }
 function cycleStatus(id) {
